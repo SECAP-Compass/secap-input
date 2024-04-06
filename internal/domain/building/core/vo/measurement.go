@@ -5,14 +5,15 @@ import (
 	"time"
 )
 
-// Should esdb.Events be same as Measurement?
+// Q: Should esdb.Events be same as Measurement?
+// A: No, the NewMeasurementEvent containts the Measurements.
 type Measurement struct {
-	Unit       string
-	Value      float64
+	Unit       string  `json:"unit"`
+	Value      float64 `json:"value"`
 	MeasuredAt time.Time
 }
 
-func NewMeasurement(unit string, value float64, measuredAt time.Time) (*Measurement, error) {
+func NewMeasurement(unit string, value float64) (*Measurement, error) {
 	if err := validateValue(value); err != nil {
 		return nil, err
 	}
@@ -23,7 +24,7 @@ func NewMeasurement(unit string, value float64, measuredAt time.Time) (*Measurem
 	return &Measurement{
 		Unit:       unit,
 		Value:      value,
-		MeasuredAt: measuredAt,
+		MeasuredAt: time.Now(),
 	}, nil
 }
 

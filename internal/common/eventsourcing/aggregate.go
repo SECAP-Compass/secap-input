@@ -39,19 +39,19 @@ type AggregateBase struct {
 }
 
 type AggregateConfig struct {
-	Id                uuid.UUID
+	EventHandler      EventHandler
 	Type              string
 	WithAppliedEvents bool
 }
 
 func NewAggregateBase(cfg *AggregateConfig) *AggregateBase {
 	return &AggregateBase{
-		ID:                cfg.Id,
 		Version:           -1,
 		AppliedEvents:     make([]*Event, 0, appliedEventCap),
 		UncommittedEvents: make([]*Event, 0, unCommitedEventCap),
 		Type:              cfg.Type,
 		withAppliedEvents: cfg.WithAppliedEvents,
+		eventHandler:      cfg.EventHandler,
 	}
 }
 

@@ -20,7 +20,7 @@ type Event struct {
 	Metadata      []byte
 }
 
-func NewEvent(a AggregateRoot, eventType string) *Event {
+func NewEvent(a *AggregateBase, eventType string) *Event {
 	return &Event{
 		EventID:       uuid.Must(uuid.NewV4()),
 		EventType:     eventType,

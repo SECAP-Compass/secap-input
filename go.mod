@@ -3,18 +3,18 @@ module secap-input
 go 1.22.1
 
 require (
+	github.com/EventStore/EventStore-Client-Go v1.0.2
 	github.com/gofiber/fiber/v2 v2.52.4
+	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/joho/godotenv v1.5.1
+	github.com/json-iterator/go v1.1.12
 )
 
 require (
-	github.com/EventStore/EventStore-Client-Go v1.0.2 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
-	github.com/gofrs/uuid v3.3.0+incompatible // indirect
 	github.com/golang/mock v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.17.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect

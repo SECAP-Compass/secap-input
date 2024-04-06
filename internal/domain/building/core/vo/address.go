@@ -3,11 +3,11 @@ package vo
 import "fmt"
 
 type Address struct {
-	Country    string
-	Region     string
-	Province   string
-	District   string
-	PostalCode string
+	Country    string `json:"country"`
+	Region     string `json:"region"`
+	Province   string `json:"province"`
+	District   string `json:"district"`
+	PostalCode string `json:"postalCode"`
 }
 
 func NewAddress(country, region, province, district, postalCode string) *Address {
