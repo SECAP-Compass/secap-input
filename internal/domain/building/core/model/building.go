@@ -3,6 +3,8 @@ package model
 import "secap-input/internal/domain/building/core/vo"
 
 type Building struct {
-	Address *vo.Address
-	Area    *vo.Measurement
+	Address      *vo.Address
+	Area         *Measurement
+	Measurements []*Measurement
+	Type         BuildingType
 }

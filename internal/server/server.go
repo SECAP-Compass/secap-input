@@ -12,6 +12,7 @@ type FiberServer struct {
 	*fiber.App
 
 	*application.CreateBuildingCommandHandler
+	*application.MeasureBuildingCommandHandler
 }
 
 func New() *FiberServer {
@@ -22,6 +23,7 @@ func New() *FiberServer {
 
 	// CommandHandlers
 	createBuildingCommandHandler := application.NewCreateBuildingCommandHandler(aggregateRepository)
+	measureBuildingCommandHandler := application.NewMeasureBuildingCommandHandler(aggregateRepository)
 
 	server := &FiberServer{
 		App: fiber.New(fiber.Config{
@@ -31,7 +33,8 @@ func New() *FiberServer {
 			JSONDecoder:  jsoniter.Unmarshal,
 		}),
 
-		CreateBuildingCommandHandler: createBuildingCommandHandler,
+		CreateBuildingCommandHandler:  createBuildingCommandHandler,
+		MeasureBuildingCommandHandler: measureBuildingCommandHandler,
 	}
 
 	return server

@@ -62,44 +62,18 @@ func (r *AggregateRepository) Save(ctx context.Context, a eventsourcing.Aggregat
 		eventDataList = append(eventDataList, e.ToEventData())
 	}
 
-	if len(a.GetCommittedEvents()) == 0 {
-		_, err := r.db.AppendToStream(
-			ctx,
-			a.GetAggregateId().String(),
-			esdb.AppendToStreamOptions{ExpectedRevision: esdb.NoStream{}},
-			eventDataList...,
-		)
-		if err != nil {
-			slog.Error("error appending to stream", err)
-			return err
-		}
-
-		return nil
+	var er esdb.ExpectedRevision
+	if a.GetVersion() == 0 {
+		er = esdb.NoStream{}
+	} else {
+		ev := uint64(a.GetVersion()) - uint64(len(a.GetUncommittedEvents()))
+		er = esdb.Revision(ev)
 	}
 
-	readStream, err := r.db.ReadStream(
+	_, err := r.db.AppendToStream(
 		ctx,
 		a.GetAggregateId().String(),
-		esdb.ReadStreamOptions{Direction: esdb.Backwards, From: esdb.End{}},
-		readCount,
-	)
-	if err != nil {
-		slog.Error("error reading stream", err)
-		return err
-	}
-	defer readStream.Close()
-
-	lastEvent, err := readStream.Recv()
-	if err != nil {
-		slog.Error("error reading stream", err)
-		return err
-	}
-
-	expectedRevision := esdb.Revision(lastEvent.OriginalEvent().EventNumber)
-	_, err = r.db.AppendToStream(
-		ctx,
-		a.GetAggregateId().String(),
-		esdb.AppendToStreamOptions{ExpectedRevision: expectedRevision},
+		esdb.AppendToStreamOptions{ExpectedRevision: er},
 		eventDataList...,
 	)
 	if err != nil {
@@ -111,27 +85,11 @@ func (r *AggregateRepository) Save(ctx context.Context, a eventsourcing.Aggregat
 	return nil
 }
 
-// What is streamId?
 func (r *AggregateRepository) Exists(ctx context.Context, aggregateId uuid.UUID) error {
 	readStreamOptions := esdb.ReadStreamOptions{Direction: esdb.Backwards, From: esdb.Revision(1)}
 
-	stream, err := r.db.ReadStream(ctx, aggregateId.String(), readStreamOptions, 1)
-	if err != nil {
+	if _, err := r.db.ReadStream(ctx, aggregateId.String(), readStreamOptions, 1); !errors.Is(err, esdb.ErrStreamNotFound) {
 		return err
-	}
-	defer stream.Close()
-
-	for {
-		_, err := stream.Recv()
-		if errors.Is(err, esdb.ErrStreamNotFound) {
-			return err
-		}
-		if errors.Is(err, io.EOF) {
-			break
-		}
-		if err != nil {
-			return err
-		}
 	}
 
 	return nil

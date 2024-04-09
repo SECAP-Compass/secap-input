@@ -16,13 +16,13 @@ func NewCreateBuildingCommandHandler(repo *repository.AggregateRepository) *Crea
 }
 
 func (h *CreateBuildingCommandHandler) Handle(cmd *aggregate.CreateBuildingCommand) (uuid.UUID, error) {
-	//err := h.repo.Exists(context.Background(), cmd.AggregateId)
-	//if err != nil {
-	//	return uuid.Nil, err
-	//}
+	err := h.repo.Exists(context.Background(), cmd.AggregateId)
+	if err != nil {
+		return uuid.Nil, err
+	}
 
 	a := aggregate.NewBuildingAggregateWithId(cmd.AggregateId)
-	err := a.CreateBuilding(cmd)
+	err = a.CreateBuildingCommandHandler(cmd)
 	if err != nil {
 		return uuid.Nil, err
 	}

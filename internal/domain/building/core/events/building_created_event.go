@@ -2,6 +2,7 @@ package events
 
 import (
 	"secap-input/internal/common/eventsourcing"
+	"secap-input/internal/domain/building/core/model"
 	"secap-input/internal/domain/building/core/vo"
 )
 
@@ -11,10 +12,10 @@ const (
 
 type BuildingCreatedEvent struct {
 	Address *vo.Address
-	Area    *vo.Measurement
+	Area    *model.Measurement
 }
 
-func NewBuildingCreatedEvent(a *eventsourcing.AggregateBase, address *vo.Address, area *vo.Measurement) (*eventsourcing.Event, error) {
+func NewBuildingCreatedEvent(a *eventsourcing.AggregateBase, address *vo.Address, area *model.Measurement) (*eventsourcing.Event, error) {
 	eventData := &BuildingCreatedEvent{
 		Address: address,
 		Area:    area,
@@ -22,7 +23,7 @@ func NewBuildingCreatedEvent(a *eventsourcing.AggregateBase, address *vo.Address
 
 	event := eventsourcing.NewEvent(a, BuildingCreatedEventType)
 	if err := event.SetEventData(eventData); err != nil {
-		return &eventsourcing.Event{}, err
+		return nil, err
 	}
 
 	return event, nil

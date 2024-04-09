@@ -1,30 +1,33 @@
-package vo
+package model
 
 import (
 	"fmt"
-	"time"
 )
 
 // Q: Should esdb.Events be same as Measurement?
 // A: No, the NewMeasurementEvent containts the Measurements.
 type Measurement struct {
-	Unit       string  `json:"unit"`
-	Value      float64 `json:"value"`
-	MeasuredAt time.Time
+	Unit            string          `json:"unit"`
+	Value           float64         `json:"value"`
+	MeasurementType MeasurementType `json:"measurementType"`
 }
 
-func NewMeasurement(unit string, value float64) (*Measurement, error) {
+func NewMeasurement(unit string, value float64, measurementType string) (*Measurement, error) {
 	if err := validateValue(value); err != nil {
 		return nil, err
 	}
 	if err := validateUnit(unit); err != nil {
 		return nil, err
 	}
+	mt, err := MeasurementTypeFromString(measurementType)
+	if err != nil {
+		return nil, err
+	}
 
 	return &Measurement{
-		Unit:       unit,
-		Value:      value,
-		MeasuredAt: time.Now(),
+		Unit:            unit,
+		Value:           value,
+		MeasurementType: mt,
 	}, nil
 }
 
