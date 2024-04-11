@@ -2,10 +2,10 @@ package eventsourcing
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"time"
 
-	"github.com/EventStore/EventStore-Client-Go/esdb"
-	uuid "github.com/gofrs/uuid"
+	"github.com/EventStore/EventStore-Client-Go/v4/esdb"
 	jsoniter "github.com/json-iterator/go"
 )
 
@@ -22,7 +22,7 @@ type Event struct {
 
 func NewEvent(a *AggregateBase, eventType string) *Event {
 	return &Event{
-		EventID:       uuid.Must(uuid.NewV4()),
+		EventID:       uuid.New(),
 		EventType:     eventType,
 		AggregateID:   a.GetAggregateId(),
 		AggregateType: a.GetType(),
@@ -31,13 +31,16 @@ func NewEvent(a *AggregateBase, eventType string) *Event {
 	}
 }
 
+// This may cause performance issues?
 func NewEventFromRecordedEvent(re *esdb.RecordedEvent) *Event {
+	aggrId, _ := uuid.Parse(re.StreamID)
+
 	return &Event{
 		EventID:     re.EventID,
 		EventType:   re.EventType,
 		Data:        re.Data,
 		Timestamp:   re.CreatedDate,
-		AggregateID: uuid.FromStringOrNil(re.StreamID),
+		AggregateID: aggrId,
 		Version:     int64(re.EventNumber),
 		Metadata:    re.UserMetadata,
 	}
@@ -98,7 +101,7 @@ func (e *Event) ToEventData() esdb.EventData {
 	return esdb.EventData{
 		EventID:     e.EventID,
 		EventType:   e.EventType,
-		ContentType: esdb.JsonContentType,
+		ContentType: esdb.ContentTypeJson,
 		Data:        e.Data,
 		Metadata:    e.Metadata,
 	}

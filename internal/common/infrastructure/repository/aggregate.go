@@ -3,13 +3,13 @@ package repository
 import (
 	"context"
 	"errors"
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 	"io"
 	"log/slog"
 	"math"
 	"secap-input/internal/common/eventsourcing"
 
-	"github.com/EventStore/EventStore-Client-Go/esdb"
+	"github.com/EventStore/EventStore-Client-Go/v4/esdb"
 )
 
 const readCount = math.MaxUint64
@@ -36,10 +36,17 @@ func (r *AggregateRepository) Load(ctx context.Context, a eventsourcing.Aggregat
 			break
 		}
 
-		if errors.Is(err, esdb.ErrStreamNotFound) {
+		var esdbErr *esdb.Error
+		errors.As(err, &esdbErr)
+
+		if esdbErr != nil && esdbErr.IsErrorCode(esdb.ErrorCodeResourceNotFound) {
 			slog.Error("stream not found", err)
 			return err
 		}
+		//if errors.Is(err, esdb.ErrorCodeResourceNotFound) {
+		//	slog.Error("stream not found", err)
+		//	return err
+		//}
 
 		e := eventsourcing.NewEventFromRecordedEvent(re.Event)
 
@@ -85,12 +92,13 @@ func (r *AggregateRepository) Save(ctx context.Context, a eventsourcing.Aggregat
 	return nil
 }
 
-func (r *AggregateRepository) Exists(ctx context.Context, aggregateId uuid.UUID) error {
+func (r *AggregateRepository) Exists(ctx context.Context, aggregateId uuid.UUID) bool {
 	readStreamOptions := esdb.ReadStreamOptions{Direction: esdb.Backwards, From: esdb.Revision(1)}
+	// error nil means stream exists?
+	_, err := r.db.ReadStream(ctx, aggregateId.String(), readStreamOptions, 1)
 
-	if _, err := r.db.ReadStream(ctx, aggregateId.String(), readStreamOptions, 1); !errors.Is(err, esdb.ErrStreamNotFound) {
-		return err
+	if err == nil {
+		return false
 	}
-
-	return nil
+	return true
 }

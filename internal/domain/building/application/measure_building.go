@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"github.com/pkg/errors"
 	"secap-input/internal/common/infrastructure/repository"
 	"secap-input/internal/domain/building/core/aggregate"
 )
@@ -16,8 +17,8 @@ func NewMeasureBuildingCommandHandler(repo *repository.AggregateRepository) *Mea
 
 func (h *MeasureBuildingCommandHandler) Handle(cmd *aggregate.MeasureBuildingCommand) error {
 	ctx := context.Background()
-	if err := h.repo.Exists(ctx, cmd.AggregateId); err != nil {
-		return err
+	if exist := h.repo.Exists(ctx, cmd.AggregateId); !exist {
+		return errors.Errorf("building with id %s does not exist", cmd.AggregateId.String())
 	}
 
 	a := aggregate.NewBuildingAggregateWithId(cmd.AggregateId)

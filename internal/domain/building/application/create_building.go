@@ -2,7 +2,8 @@ package application
 
 import (
 	"context"
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
+	"github.com/pkg/errors"
 	"secap-input/internal/common/infrastructure/repository"
 	"secap-input/internal/domain/building/core/aggregate"
 )
@@ -16,13 +17,13 @@ func NewCreateBuildingCommandHandler(repo *repository.AggregateRepository) *Crea
 }
 
 func (h *CreateBuildingCommandHandler) Handle(cmd *aggregate.CreateBuildingCommand) (uuid.UUID, error) {
-	err := h.repo.Exists(context.Background(), cmd.AggregateId)
-	if err != nil {
-		return uuid.Nil, err
+	exist := h.repo.Exists(context.Background(), cmd.AggregateId)
+	if exist {
+		return uuid.Nil, errors.Errorf("building with id %s already exists", cmd.AggregateId.String())
 	}
 
 	a := aggregate.NewBuildingAggregateWithId(cmd.AggregateId)
-	err = a.CreateBuildingCommandHandler(cmd)
+	err := a.CreateBuildingCommandHandler(cmd)
 	if err != nil {
 		return uuid.Nil, err
 	}

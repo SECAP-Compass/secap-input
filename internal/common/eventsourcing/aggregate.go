@@ -3,7 +3,7 @@ package eventsourcing
 import (
 	"slices"
 
-	uuid "github.com/gofrs/uuid"
+	"github.com/google/uuid"
 )
 
 const (

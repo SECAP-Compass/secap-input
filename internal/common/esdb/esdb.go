@@ -1,10 +1,12 @@
 package esdb
 
 import (
-	"fmt"
-	"github.com/EventStore/EventStore-Client-Go/esdb"
+	"context"
+	"github.com/EventStore/EventStore-Client-Go/v4/esdb"
 	"github.com/gofiber/fiber/v2/log"
 )
+
+type SubscriptionWorker func(ctx context.Context, stream *esdb.PersistentSubscription, workerID int) error
 
 func ConnectESDB() *esdb.Client {
 	cfg, err := esdb.ParseConnectionString("esdb://localhost:2113?tls=false")
@@ -16,8 +18,6 @@ func ConnectESDB() *esdb.Client {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Printf("client.Config.Address: %v\n", client.Config.Address)
 
 	return client
 }

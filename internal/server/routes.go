@@ -2,10 +2,11 @@ package server
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 	"secap-input/internal/common/eventsourcing"
 	"secap-input/internal/domain/building/core/aggregate"
 	"secap-input/internal/domain/building/core/model"
+	"secap-input/internal/domain/building/core/vo"
 	"secap-input/internal/server/request"
 )
 
@@ -35,9 +36,8 @@ func (s *FiberServer) CreateBuilding(c *fiber.Ctx) error {
 		})
 	}
 
-	uuid, _ := uuid.NewV4()
 	cmd := &aggregate.CreateBuildingCommand{
-		BaseCommand: eventsourcing.NewBaseCommand(uuid),
+		BaseCommand: eventsourcing.NewBaseCommand(uuid.New()),
 		Address:     &r.Address,
 		Area:        &r.Area,
 	}
@@ -65,7 +65,7 @@ func (s *FiberServer) MeasureBuilding(c *fiber.Ctx) error {
 		})
 	}
 
-	aggregateId, err := uuid.FromString(c.Params("buildingId"))
+	aggregateId, err := uuid.Parse(c.Params("buildingId"))
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{
 			"error": err.Error(),
@@ -73,7 +73,14 @@ func (s *FiberServer) MeasureBuilding(c *fiber.Ctx) error {
 
 	}
 
-	measurement, err := model.NewMeasurement(r.Unit, r.Value, r.Type)
+	mt, err := vo.MeasurementTypeFromString(r.Type)
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	measurement, err := model.NewMeasurement(r.Unit, r.Value, mt)
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{
 			"error": err.Error(),

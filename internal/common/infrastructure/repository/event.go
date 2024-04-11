@@ -7,7 +7,7 @@ import (
 	"log/slog"
 	"secap-input/internal/common/eventsourcing"
 
-	"github.com/EventStore/EventStore-Client-Go/esdb"
+	"github.com/EventStore/EventStore-Client-Go/v4/esdb"
 )
 
 type EventRepository struct {

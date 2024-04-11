@@ -2,7 +2,7 @@ package aggregate
 
 import (
 	"errors"
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 	"secap-input/internal/common/eventsourcing"
 	"secap-input/internal/domain/building/core/events"
 	"secap-input/internal/domain/building/core/model"

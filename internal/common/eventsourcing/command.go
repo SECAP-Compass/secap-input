@@ -1,6 +1,6 @@
 package eventsourcing
 
-import "github.com/gofrs/uuid"
+import "github.com/google/uuid"
 
 type Command interface {
 	GetAggregateId() uuid.UUID
