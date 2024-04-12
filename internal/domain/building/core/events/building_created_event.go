@@ -11,8 +11,8 @@ const (
 )
 
 type BuildingCreatedEvent struct {
-	Address *vo.Address
-	Area    *model.Measurement
+	Address *vo.Address        `json:"address"`
+	Area    *model.Measurement `json:"area"`
 }
 
 func NewBuildingCreatedEvent(a *eventsourcing.AggregateBase, address *vo.Address, area *model.Measurement) (*eventsourcing.Event, error) {

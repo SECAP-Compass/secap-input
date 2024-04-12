@@ -57,15 +57,15 @@ func MeasurementTypeFromString(s string) (MeasurementType, error) {
 	switch strings.ToLower(s) {
 	case "electricity":
 		return Electricity, nil
-	case "districtHeating":
+	case "districtheating":
 		return DistrictHeating, nil
-	case "districtCooling":
+	case "districtcooling":
 		return DistrictCooling, nil
-	case "naturalGas":
+	case "naturalgas":
 		return NaturalGas, nil
-	case "liquidGas":
+	case "liquidgas":
 		return LiquidGas, nil
-	case "heatingOil":
+	case "heatingoil":
 		return HeatingOil, nil
 	case "diesel":
 		return Diesel, nil
@@ -83,9 +83,9 @@ func MeasurementTypeFromString(s string) (MeasurementType, error) {
 		return PlantOil, nil
 	case "biofuel":
 		return Biofuel, nil
-	case "otherBiomass":
+	case "otherbiomass":
 		return OtherBiomass, nil
-	case "solarThermal":
+	case "solarthermal":
 		return SolarThermal, nil
 	case "geothermal":
 		return Geothermal, nil
