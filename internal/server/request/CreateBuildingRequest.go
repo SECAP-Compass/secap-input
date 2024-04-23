@@ -6,6 +6,7 @@ import (
 )
 
 type CreateBuildingRequest struct {
+	Name    string            `json:"name"`
 	Address vo.Address        `json:"address"`
 	Area    model.Measurement `json:"area"`
 }
