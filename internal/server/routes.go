@@ -11,14 +11,15 @@ import (
 
 func (s *FiberServer) RegisterFiberRoutes() {
 
-	s.App.Get("/building/measurement_types")
+	s.App.Get("/building/measurement_types", s.getAllMeasurementTypes)
+	s.App.Get("/building/measurement_types/:header", s.getMeasurementType)
 
-	s.App.Post("/building", s.CreateBuilding)
-	s.App.Post("/building/:buildingId/measure", s.MeasureBuilding)
+	s.App.Post("/building", s.createBuilding)
+	s.App.Post("/building/:buildingId/measure", s.measureBuilding)
 
 }
 
-func (s *FiberServer) CreateBuilding(c *fiber.Ctx) error {
+func (s *FiberServer) createBuilding(c *fiber.Ctx) error {
 	r := request.CreateBuildingRequest{}
 
 	err := c.BodyParser(&r)
@@ -47,7 +48,7 @@ func (s *FiberServer) CreateBuilding(c *fiber.Ctx) error {
 	})
 }
 
-func (s *FiberServer) MeasureBuilding(c *fiber.Ctx) error {
+func (s *FiberServer) measureBuilding(c *fiber.Ctx) error {
 	r := request.MeasureBuildingRequest{}
 
 	err := c.BodyParser(&r)
@@ -91,4 +92,15 @@ func (s *FiberServer) MeasureBuilding(c *fiber.Ctx) error {
 
 func (s *FiberServer) getAllMeasurementTypes(c *fiber.Ctx) error {
 	return c.JSON(s.MeasurementTypeProvider.GetMeasurementAllTypes())
+}
+
+func (s *FiberServer) getMeasurementType(c *fiber.Ctx) error {
+	header := c.Params("header")
+
+	mt, err := s.MeasurementTypeProvider.GetMeasurementTypesByHeader(model.MeasurementTypeHeader(header))
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{})
+	}
+
+	return c.JSON(mt)
 }
