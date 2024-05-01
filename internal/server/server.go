@@ -6,6 +6,7 @@ import (
 	"secap-input/internal/common/esdb"
 	"secap-input/internal/common/infrastructure/repository"
 	"secap-input/internal/domain/building/application"
+	"secap-input/internal/domain/building/infrastructure"
 )
 
 type FiberServer struct {
@@ -20,10 +21,11 @@ func New() *FiberServer {
 	esdbClient := esdb.ConnectESDB()
 
 	aggregateRepository := repository.NewAggregateRepository(esdbClient)
+	mtp := infrastructure.NewMeasurementTypeProvider()
 
 	// CommandHandlers
 	createBuildingCommandHandler := application.NewCreateBuildingCommandHandler(aggregateRepository)
-	measureBuildingCommandHandler := application.NewMeasureBuildingCommandHandler(aggregateRepository)
+	measureBuildingCommandHandler := application.NewMeasureBuildingCommandHandler(aggregateRepository, mtp)
 
 	server := &FiberServer{
 		App: fiber.New(fiber.Config{

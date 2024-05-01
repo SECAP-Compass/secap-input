@@ -4,25 +4,34 @@ import (
 	"context"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
-	"secap-input/internal/common/infrastructure/repository"
 	"secap-input/internal/domain/building/core/aggregate"
+	"secap-input/internal/domain/building/core/model"
+	"secap-input/internal/domain/building/core/ports"
+	"slices"
 )
 
 type MeasureBuildingCommandHandler struct {
-	repo *repository.AggregateRepository // I think this should be a repository for the building aggregate
+	repo ports.IAggregateRepository // I think this should be a repository for the building aggregate
+	mtp  ports.MeasurementTypeProvider
 
 	l *zap.Logger
 }
 
-func NewMeasureBuildingCommandHandler(repo *repository.AggregateRepository) *MeasureBuildingCommandHandler {
+func NewMeasureBuildingCommandHandler(repo ports.IAggregateRepository, mtp ports.MeasurementTypeProvider) *MeasureBuildingCommandHandler {
 	return &MeasureBuildingCommandHandler{
 		repo: repo,
+		mtp:  mtp,
 		l:    zap.L().Named("MeasureBuildingCommandHandler"),
 	}
 }
 
 func (h *MeasureBuildingCommandHandler) Handle(cmd *aggregate.MeasureBuildingCommand) error {
 	ctx := context.Background()
+
+	if err := h.validateMeasurement(cmd.Measurement); err != nil {
+		h.l.Error("Failed to validate measurement", zap.Error(err))
+		return err
+	}
 
 	a := aggregate.NewBuildingAggregateWithId(cmd.AggregateId)
 	if err := h.repo.Load(context.Background(), a); err != nil {
@@ -36,4 +45,23 @@ func (h *MeasureBuildingCommandHandler) Handle(cmd *aggregate.MeasureBuildingCom
 	}
 
 	return h.repo.Save(ctx, a)
+}
+
+func (h *MeasureBuildingCommandHandler) validateMeasurement(m *model.Measurement) error {
+	mtList, err := h.mtp.GetMeasurementTypesByHeader(m.MeasurementTypeHeader)
+	if err != nil {
+		return err
+	}
+
+	if slices.Contains(mtList, m.MeasurementType) {
+		return errors.Errorf("measurement type %s is not found", m.MeasurementType)
+	}
+
+	if m.Value < 0 {
+		return errors.Errorf("measurement value %f is invalid", m.Value)
+	}
+
+	// TODO: Measurement Unit validation
+
+	return nil
 }

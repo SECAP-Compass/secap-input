@@ -1,0 +1,84 @@
+{
+    "Kömür ve Kok": [
+      "Antrasit Kömür",
+      "Bitümlü Kömür",
+      "Alt Bitümlü Kömür",
+      "Linyit Kömürü",
+      "Karışık (Ticari Sektör)",
+      "Karışık (Elektrik Enerjisi Sektörü)",
+      "Karışık (Endüstriyel Kok)",
+      "Karışık (Endüstriyel Sektör)",
+      "Kömür Koku"
+    ],
+    "Diğer Katı Yakıtlar": [
+      "Belediye Katı Atıkları",
+      "Petrol Koku (Katı)",
+      "Plastikler",
+      "Lastikler"
+    ],
+    "Katı Biyokütle Yakıtları": [
+      "Tarımsal Yan Ürünler",
+      "Turba",
+      "Katı Yan Ürünler",
+      "Odun ve Odun Artıkları"
+    ],
+    "Doğal Gaz": [
+      "Doğal Gaz"
+    ],
+    "Diğer Gaz Yakıtlar": [
+      "Yüksek Fırın Gazı",
+      "Kok Fırını Gazı",
+      "Yakıt Gazı",
+      "Propan Gazı"
+    ],
+    "Gaz Biyokütle Yakıtları": [
+      "Çöp Gazı",
+      "Diğer Biyokütle Gazları"
+    ],
+    "Petrol Ürünleri": [
+      "Asfalt ve Yol Yağı",
+      "Havacılık Benzini",
+      "Bütan",
+      "Bütilen",
+      "Ham Petrol",
+      "Damıtık Yakıt Yağı No. 1",
+      "Damıtık Yakıt Yağı No. 2",
+      "Damıtık Yakıt Yağı No. 4",
+      "Etan",
+      "Etilen",
+      "Ağır Gaz Yağları",
+      "İzobütan",
+      "İzobütilen",
+      "Gazyağı",
+      "Gazyağı Tipi Jet Yakıtı",
+      "Sıvılaştırılmış Petrol Gazları (LPG)",
+      "Yağlayıcılar",
+      "Motor Benzini",
+      "Nafta (<401 derece F)",
+      "Doğal Benzin",
+      "Diğer Yağ (>401 derece F)",
+      "Pentanlar Plus",
+      "Petrokimyasal Hammaddeler",
+      "Petrol Koku",
+      "Propan",
+      "Propilen",
+      "Artık Yakıt Yağı No. 5",
+      "Artık Yakıt Yağı No. 6",
+      "Özel Nafta",
+      "Bitmemiş Yağlar",
+      "Kullanılmış Yağ"
+    ],
+    "Sıvı Biyokütle Yakıtları": [
+      "Biyomotorin (%100)",
+      "Etanol (%100)",
+      "İşlenmiş Hayvan Yağı",
+      "Bitkisel Yağ"
+    ],
+    "Odun Hammaddesine Göre Kraft Hamurlaştırma Likörü Biyokütle Yakıtları": [
+      "Kuzey Amerika Yumuşak Ağaç",
+      "Kuzey Amerika Sert Ağaç",
+      "Bagas",
+      "Bambu",
+      "Saman"
+    ]
+  }

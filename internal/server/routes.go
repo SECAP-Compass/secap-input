@@ -6,7 +6,6 @@ import (
 	"secap-input/internal/common/eventsourcing"
 	"secap-input/internal/domain/building/core/aggregate"
 	"secap-input/internal/domain/building/core/model"
-	"secap-input/internal/domain/building/core/vo"
 	"secap-input/internal/server/request"
 )
 
@@ -73,14 +72,7 @@ func (s *FiberServer) MeasureBuilding(c *fiber.Ctx) error {
 
 	}
 
-	mt, err := vo.MeasurementTypeFromString(r.Type)
-	if err != nil {
-		return c.Status(400).JSON(fiber.Map{
-			"error": err.Error(),
-		})
-	}
-
-	measurement, err := model.NewMeasurement(r.Unit, r.Value, mt)
+	measurement, err := model.NewMeasurement(r.Unit, r.Value, r.Type, r.TypeHeader)
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{
 			"error": err.Error(),
