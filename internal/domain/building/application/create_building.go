@@ -10,20 +10,24 @@ import (
 	"go.uber.org/zap"
 )
 
-type CreateBuildingCommandHandler struct {
+type CreateBuildingCommandHandler interface {
+	Handle(cmd *aggregate.CreateBuildingCommand) (uuid.UUID, error)
+}
+
+type createBuildingCommandHandler struct {
 	repo ports.IAggregateRepository // I think this should be a repository for the building aggregate
 
 	l *zap.Logger
 }
 
-func NewCreateBuildingCommandHandler(repo ports.IAggregateRepository) *CreateBuildingCommandHandler {
-	return &CreateBuildingCommandHandler{
+func NewCreateBuildingCommandHandler(repo ports.IAggregateRepository) *createBuildingCommandHandler {
+	return &createBuildingCommandHandler{
 		repo: repo,
-		l:    zap.L().Named("CreateBuildingCommandHandler"),
+		l:    zap.L().Named("createBuildingCommandHandler"),
 	}
 }
 
-func (h *CreateBuildingCommandHandler) Handle(cmd *aggregate.CreateBuildingCommand) (uuid.UUID, error) {
+func (h *createBuildingCommandHandler) Handle(cmd *aggregate.CreateBuildingCommand) (uuid.UUID, error) {
 	exist := h.repo.Exists(context.Background(), cmd.AggregateId)
 	if exist {
 		h.l.Error("building with id already exists", zap.String("id", cmd.AggregateId.String()))

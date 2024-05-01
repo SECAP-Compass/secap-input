@@ -6,14 +6,17 @@ import (
 	"secap-input/internal/common/esdb"
 	"secap-input/internal/common/infrastructure/repository"
 	"secap-input/internal/domain/building/application"
+	"secap-input/internal/domain/building/core/ports"
 	"secap-input/internal/domain/building/infrastructure"
 )
 
 type FiberServer struct {
 	*fiber.App
 
-	*application.CreateBuildingCommandHandler
-	*application.MeasureBuildingCommandHandler
+	ports.MeasurementTypeProvider
+
+	application.CreateBuildingCommandHandler
+	application.MeasureBuildingCommandHandler
 }
 
 func New() *FiberServer {
@@ -34,6 +37,8 @@ func New() *FiberServer {
 			JSONEncoder:  jsoniter.Marshal,
 			JSONDecoder:  jsoniter.Unmarshal,
 		}),
+
+		MeasurementTypeProvider: mtp,
 
 		CreateBuildingCommandHandler:  createBuildingCommandHandler,
 		MeasureBuildingCommandHandler: measureBuildingCommandHandler,

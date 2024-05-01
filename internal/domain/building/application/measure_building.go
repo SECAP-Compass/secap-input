@@ -10,22 +10,26 @@ import (
 	"slices"
 )
 
-type MeasureBuildingCommandHandler struct {
+type MeasureBuildingCommandHandler interface {
+	Handle(cmd *aggregate.MeasureBuildingCommand) error
+}
+
+type measureBuildingCommandHandler struct {
 	repo ports.IAggregateRepository // I think this should be a repository for the building aggregate
 	mtp  ports.MeasurementTypeProvider
 
 	l *zap.Logger
 }
 
-func NewMeasureBuildingCommandHandler(repo ports.IAggregateRepository, mtp ports.MeasurementTypeProvider) *MeasureBuildingCommandHandler {
-	return &MeasureBuildingCommandHandler{
+func NewMeasureBuildingCommandHandler(repo ports.IAggregateRepository, mtp ports.MeasurementTypeProvider) *measureBuildingCommandHandler {
+	return &measureBuildingCommandHandler{
 		repo: repo,
 		mtp:  mtp,
-		l:    zap.L().Named("MeasureBuildingCommandHandler"),
+		l:    zap.L().Named("measureBuildingCommandHandler"),
 	}
 }
 
-func (h *MeasureBuildingCommandHandler) Handle(cmd *aggregate.MeasureBuildingCommand) error {
+func (h *measureBuildingCommandHandler) Handle(cmd *aggregate.MeasureBuildingCommand) error {
 	ctx := context.Background()
 
 	if err := h.validateMeasurement(cmd.Measurement); err != nil {
@@ -47,7 +51,7 @@ func (h *MeasureBuildingCommandHandler) Handle(cmd *aggregate.MeasureBuildingCom
 	return h.repo.Save(ctx, a)
 }
 
-func (h *MeasureBuildingCommandHandler) validateMeasurement(m *model.Measurement) error {
+func (h *measureBuildingCommandHandler) validateMeasurement(m *model.Measurement) error {
 	mtList, err := h.mtp.GetMeasurementTypesByHeader(m.MeasurementTypeHeader)
 	if err != nil {
 		return err
