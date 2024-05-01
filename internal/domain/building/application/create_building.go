@@ -2,20 +2,21 @@ package application
 
 import (
 	"context"
+	"secap-input/internal/domain/building/core/aggregate"
+	"secap-input/internal/domain/building/core/ports"
+
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
-	"secap-input/internal/common/infrastructure/repository"
-	"secap-input/internal/domain/building/core/aggregate"
 )
 
 type CreateBuildingCommandHandler struct {
-	repo *repository.AggregateRepository // I think this should be a repository for the building aggregate
+	repo ports.IAggregateRepository // I think this should be a repository for the building aggregate
 
 	l *zap.Logger
 }
 
-func NewCreateBuildingCommandHandler(repo *repository.AggregateRepository) *CreateBuildingCommandHandler {
+func NewCreateBuildingCommandHandler(repo ports.IAggregateRepository) *CreateBuildingCommandHandler {
 	return &CreateBuildingCommandHandler{
 		repo: repo,
 		l:    zap.L().Named("CreateBuildingCommandHandler"),
