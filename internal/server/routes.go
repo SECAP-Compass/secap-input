@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"net/url"
 	"secap-input/internal/common/eventsourcing"
 	"secap-input/internal/domain/building/core/aggregate"
 	"secap-input/internal/domain/building/core/model"
@@ -97,9 +98,18 @@ func (s *FiberServer) getAllMeasurementTypes(c *fiber.Ctx) error {
 func (s *FiberServer) getMeasurementType(c *fiber.Ctx) error {
 	header := c.Params("header")
 
+	header, err := url.QueryUnescape(header)
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
 	mt, err := s.MeasurementTypeProvider.GetMeasurementTypesByHeader(model.MeasurementTypeHeader(header))
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{})
+		return c.Status(400).JSON(fiber.Map{
+			"error": err.Error(),
+		})
 	}
 
 	return c.JSON(mt)
