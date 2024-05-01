@@ -11,6 +11,7 @@ import (
 )
 
 func (s *FiberServer) RegisterFiberRoutes() {
+	s.App.Get("/", s.HelloWorldHandler)
 
 	s.App.Get("/building/measurement_types", s.getAllMeasurementTypes)
 	s.App.Get("/building/measurement_types/:header", s.getMeasurementType)
@@ -18,6 +19,14 @@ func (s *FiberServer) RegisterFiberRoutes() {
 	s.App.Post("/building", s.createBuilding)
 	s.App.Post("/building/:buildingId/measure", s.measureBuilding)
 
+}
+
+func (s *FiberServer) HelloWorldHandler(c *fiber.Ctx) error {
+	resp := fiber.Map{
+		"message": "Hello World",
+	}
+
+	return c.JSON(resp)
 }
 
 func (s *FiberServer) createBuilding(c *fiber.Ctx) error {
