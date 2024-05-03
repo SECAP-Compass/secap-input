@@ -22,7 +22,7 @@ func NewMeasurementTypeProvider() ports.MeasurementTypeProvider {
 }
 
 func (m *measurementTypeProvider) fetchConfig() {
-	file, err := os.ReadFile("config/measurement_types/en.json") // Can this be multi-language?
+	file, err := os.ReadFile("config/building_measurement_types/en.json") // Can this be multi-language?
 	if err != nil {
 		panic(err)
 	}

@@ -19,10 +19,10 @@ var (
 type CreateBuildingCommand struct {
 	*eventsourcing.BaseCommand
 	Address *vo.Address
-	Area    *model.Measurement
+	Area    *vo.Area
 }
 
-func NewCreateBuildingCommand(aggregateId uuid.UUID, address *vo.Address, area *model.Measurement) *CreateBuildingCommand {
+func NewCreateBuildingCommand(aggregateId uuid.UUID, address *vo.Address, area *vo.Area) *CreateBuildingCommand {
 	return &CreateBuildingCommand{BaseCommand: eventsourcing.NewBaseCommand(aggregateId), Address: address, Area: area}
 }
 
