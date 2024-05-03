@@ -11,7 +11,7 @@ import (
 )
 
 type MeasureBuildingCommandHandler interface {
-	Handle(cmd *aggregate.MeasureBuildingCommand) error
+	Handle(ctx context.Context, cmd *aggregate.MeasureBuildingCommand) error
 }
 
 type measureBuildingCommandHandler struct {
@@ -29,8 +29,7 @@ func NewMeasureBuildingCommandHandler(repo ports.IAggregateRepository, mtp ports
 	}
 }
 
-func (h *measureBuildingCommandHandler) Handle(cmd *aggregate.MeasureBuildingCommand) error {
-	ctx := context.Background()
+func (h *measureBuildingCommandHandler) Handle(ctx context.Context, cmd *aggregate.MeasureBuildingCommand) error {
 
 	if err := h.validateMeasurement(cmd.Measurement); err != nil {
 		h.l.Error("Failed to validate measurement", zap.Error(err))

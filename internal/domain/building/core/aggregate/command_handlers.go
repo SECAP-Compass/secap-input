@@ -32,7 +32,7 @@ func (b *BuildingAggregate) CreateBuildingCommandHandler(cmd *CreateBuildingComm
 		return ErrBuildingAreaValueIsInvalid
 	}
 
-	if !strings.EqualFold(cmd.Area.Unit, "sqm") {
+	if !strings.EqualFold(cmd.Area.Unit, "m2") {
 		return ErrBuildingAreaUnitIsInvalid
 	}
 

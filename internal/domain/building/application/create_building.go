@@ -11,7 +11,7 @@ import (
 )
 
 type CreateBuildingCommandHandler interface {
-	Handle(cmd *aggregate.CreateBuildingCommand) (uuid.UUID, error)
+	Handle(ctx context.Context, cmd *aggregate.CreateBuildingCommand) (uuid.UUID, error)
 }
 
 type createBuildingCommandHandler struct {
@@ -27,8 +27,8 @@ func NewCreateBuildingCommandHandler(repo ports.IAggregateRepository) *createBui
 	}
 }
 
-func (h *createBuildingCommandHandler) Handle(cmd *aggregate.CreateBuildingCommand) (uuid.UUID, error) {
-	exist := h.repo.Exists(context.Background(), cmd.AggregateId)
+func (h *createBuildingCommandHandler) Handle(ctx context.Context, cmd *aggregate.CreateBuildingCommand) (uuid.UUID, error) {
+	exist := h.repo.Exists(ctx, cmd.AggregateId)
 	if exist {
 		h.l.Error("building with id already exists", zap.String("id", cmd.AggregateId.String()))
 		return uuid.Nil, errors.Errorf("building with id %s already exists", cmd.AggregateId.String())
@@ -41,5 +41,5 @@ func (h *createBuildingCommandHandler) Handle(cmd *aggregate.CreateBuildingComma
 		return uuid.Nil, err
 	}
 
-	return cmd.AggregateId, h.repo.Save(context.Background(), a)
+	return cmd.AggregateId, h.repo.Save(ctx, a)
 }

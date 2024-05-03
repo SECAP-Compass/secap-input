@@ -7,17 +7,18 @@ import (
 	"secap-input/internal/common/eventsourcing"
 	"secap-input/internal/domain/building/core/aggregate"
 	"secap-input/internal/domain/building/core/model"
+	"secap-input/internal/server/interceptor"
 	"secap-input/internal/server/request"
 )
 
 func (s *FiberServer) RegisterFiberRoutes() {
 	s.App.Get("/", s.HelloWorldHandler)
 
-	s.App.Get("/building/building_measurement_types", s.getAllMeasurementTypes)
-	s.App.Get("/building/building_measurement_types/:header", s.getMeasurementType)
+	s.App.Get("/building/measurement-types", s.getAllMeasurementTypes)
+	s.App.Get("/building/measurement-types/:header", s.getMeasurementType)
 
-	s.App.Post("/building", s.createBuilding)
-	s.App.Post("/building/:buildingId/measure", s.measureBuilding)
+	s.App.Post("/building", interceptor.AuthorityInterceptor, s.createBuilding)
+	s.App.Post("/building/:buildingId/measure", interceptor.AuthorityInterceptor, s.measureBuilding)
 
 }
 
@@ -39,13 +40,12 @@ func (s *FiberServer) createBuilding(c *fiber.Ctx) error {
 		})
 	}
 
-	cmd := &aggregate.CreateBuildingCommand{
-		BaseCommand: eventsourcing.NewBaseCommand(uuid.New()),
-		Address:     &r.Address,
-		Area:        &r.Area,
-	}
-
-	aggregateId, err := s.CreateBuildingCommandHandler.Handle(cmd)
+	cmd := aggregate.NewCreateBuildingCommand(
+		uuid.New(),
+		&r.Address,
+		&r.Area,
+	)
+	aggregateId, err := s.CreateBuildingCommandHandler.Handle(c.UserContext(), cmd)
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{ // Don't mind the status code, it's just for testing
 			"error": err.Error(),
@@ -88,7 +88,7 @@ func (s *FiberServer) measureBuilding(c *fiber.Ctx) error {
 		Measurement: measurement,
 	}
 
-	err = s.MeasureBuildingCommandHandler.Handle(cmd)
+	err = s.MeasureBuildingCommandHandler.Handle(c.UserContext(), cmd)
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{ // Don't mind the status code, it's just for testing
 			"error": err.Error(),
