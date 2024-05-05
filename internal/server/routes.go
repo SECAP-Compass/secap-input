@@ -19,6 +19,7 @@ func (s *FiberServer) RegisterFiberRoutes() {
 
 	s.App.Post("/building", interceptor.AuthorityInterceptor, s.createBuilding)
 	s.App.Post("/building/:buildingId/measure", interceptor.AuthorityInterceptor, s.measureBuilding)
+	s.App.Post("/building/:buildingId/bulk-measure", interceptor.AuthorityInterceptor, s.measureBuilding)
 
 }
 
@@ -122,4 +123,11 @@ func (s *FiberServer) getMeasurementType(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(mt)
+}
+
+func (s *FiberServer) bulkMeasure(c *fiber.Ctx) error {
+
+	// TODO: Implement
+	panic("Implement me.")
+	return nil
 }
