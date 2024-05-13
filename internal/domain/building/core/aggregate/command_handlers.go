@@ -1,6 +1,7 @@
 package aggregate
 
 import (
+	"context"
 	"errors"
 	"github.com/google/uuid"
 	"secap-input/internal/common/eventsourcing"
@@ -27,7 +28,7 @@ func NewCreateBuildingCommand(aggregateId uuid.UUID, address *vo.Address, area *
 	return &CreateBuildingCommand{BaseCommand: eventsourcing.NewBaseCommand(aggregateId), Address: address, Area: area, Bt: bt}
 }
 
-func (b *BuildingAggregate) CreateBuildingCommandHandler(cmd *CreateBuildingCommand) error {
+func (b *BuildingAggregate) CreateBuildingCommandHandler(ctx context.Context, cmd *CreateBuildingCommand) error {
 
 	if cmd.Area.Value <= 0.0 {
 		return ErrBuildingAreaValueIsInvalid
@@ -37,7 +38,7 @@ func (b *BuildingAggregate) CreateBuildingCommandHandler(cmd *CreateBuildingComm
 		return ErrBuildingAreaUnitIsInvalid
 	}
 
-	event, err := events.NewBuildingCreatedEvent(b.AggregateBase, cmd.Address, cmd.Area, cmd.Bt)
+	event, err := events.NewBuildingCreatedEvent(ctx, b.AggregateBase, cmd.Address, cmd.Area, cmd.Bt)
 	if err != nil {
 		return err
 	}

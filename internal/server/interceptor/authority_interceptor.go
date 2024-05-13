@@ -20,7 +20,14 @@ func AuthorityInterceptor(c *fiber.Ctx) error {
 		})
 	}
 
-	c.SetUserContext(context.WithValue(c.UserContext(), "authority", id))
+	agent := c.GetReqHeaders()["X-Agent"]
+	if agent == nil {
+		return c.Status(400).JSON(fiber.Map{
+			"error": "missing agent header",
+		})
+	}
 
+	c.SetUserContext(context.WithValue(c.UserContext(), "authority", id))
+	c.SetUserContext(context.WithValue(c.UserContext(), "agent", agent[0]))
 	return c.Next()
 }

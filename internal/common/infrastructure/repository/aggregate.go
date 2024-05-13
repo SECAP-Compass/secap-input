@@ -68,11 +68,8 @@ func (r *AggregateRepository) Save(ctx context.Context, a eventsourcing.Aggregat
 		return nil
 	}
 
-	m := metadata{Authority: ctx.Value("authority").(string)}
-
 	eventDataList := make([]esdb.EventData, 0, len(a.GetUncommittedEvents()))
 	for _, e := range a.GetUncommittedEvents() {
-		e.SetMetaData(m)
 		eventDataList = append(eventDataList, e.ToEventData())
 	}
 

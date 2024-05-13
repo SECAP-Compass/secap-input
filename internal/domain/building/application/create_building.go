@@ -35,7 +35,7 @@ func (h *createBuildingCommandHandler) Handle(ctx context.Context, cmd *aggregat
 	}
 
 	a := aggregate.NewBuildingAggregateWithId(cmd.AggregateId)
-	err := a.CreateBuildingCommandHandler(cmd)
+	err := a.CreateBuildingCommandHandler(ctx, cmd)
 	if err != nil {
 		h.l.Error("failed to create building", zap.Error(err))
 		return uuid.Nil, err

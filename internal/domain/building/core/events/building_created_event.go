@@ -1,6 +1,7 @@
 package events
 
 import (
+	"context"
 	"secap-input/internal/common/eventsourcing"
 	"secap-input/internal/domain/building/core/model"
 	"secap-input/internal/domain/building/core/vo"
@@ -16,7 +17,7 @@ type BuildingCreatedEvent struct {
 	BuildingType string      `json:"type"`
 }
 
-func NewBuildingCreatedEvent(a *eventsourcing.AggregateBase, address *vo.Address, area *vo.Area, bt *model.BuildingType) (*eventsourcing.Event, error) {
+func NewBuildingCreatedEvent(ctx context.Context, a *eventsourcing.AggregateBase, address *vo.Address, area *vo.Area, bt *model.BuildingType) (*eventsourcing.Event, error) {
 	eventData := &BuildingCreatedEvent{
 		Address:      address,
 		Area:         area,
@@ -25,6 +26,11 @@ func NewBuildingCreatedEvent(a *eventsourcing.AggregateBase, address *vo.Address
 
 	event := eventsourcing.NewEvent(a, BuildingCreatedEventType)
 	if err := event.SetEventData(eventData); err != nil {
+		return nil, err
+	}
+
+	md := eventsourcing.NewEventMetadataFromContext(ctx)
+	if err := event.SetMetaData(md); err != nil {
 		return nil, err
 	}
 

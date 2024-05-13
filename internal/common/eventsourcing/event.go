@@ -1,6 +1,7 @@
 package eventsourcing
 
 import (
+	"context"
 	"fmt"
 	"github.com/google/uuid"
 	"time"
@@ -20,6 +21,11 @@ type Event struct {
 	Metadata      []byte
 }
 
+type EventMetadata struct {
+	Authority  string `json:"authority"`
+	OccurredBy string `json:"occurredBy"`
+}
+
 func NewEvent(a *AggregateBase, eventType string) *Event {
 	return &Event{
 		EventID:       uuid.New(),
@@ -28,6 +34,13 @@ func NewEvent(a *AggregateBase, eventType string) *Event {
 		AggregateType: a.GetType(),
 		Version:       a.GetVersion(),
 		Timestamp:     time.Now().UTC(),
+	}
+}
+
+func NewEventMetadataFromContext(ctx context.Context) *EventMetadata {
+	return &EventMetadata{
+		Authority:  ctx.Value("authority").(string),
+		OccurredBy: ctx.Value("agent").(string),
 	}
 }
 
@@ -66,6 +79,7 @@ func (e *Event) SetVersion(version int64) {
 	e.Version = version
 }
 
+// May use generics here?
 func (e *Event) GetEventData(toParse interface{}) error {
 	err := jsoniter.Unmarshal(e.Data, toParse)
 	fmt.Errorf("%v", err)
