@@ -20,10 +20,11 @@ type CreateBuildingCommand struct {
 	*eventsourcing.BaseCommand
 	Address *vo.Address
 	Area    *vo.Area
+	Bt      *model.BuildingType
 }
 
-func NewCreateBuildingCommand(aggregateId uuid.UUID, address *vo.Address, area *vo.Area) *CreateBuildingCommand {
-	return &CreateBuildingCommand{BaseCommand: eventsourcing.NewBaseCommand(aggregateId), Address: address, Area: area}
+func NewCreateBuildingCommand(aggregateId uuid.UUID, address *vo.Address, area *vo.Area, bt *model.BuildingType) *CreateBuildingCommand {
+	return &CreateBuildingCommand{BaseCommand: eventsourcing.NewBaseCommand(aggregateId), Address: address, Area: area, Bt: bt}
 }
 
 func (b *BuildingAggregate) CreateBuildingCommandHandler(cmd *CreateBuildingCommand) error {
@@ -36,7 +37,7 @@ func (b *BuildingAggregate) CreateBuildingCommandHandler(cmd *CreateBuildingComm
 		return ErrBuildingAreaUnitIsInvalid
 	}
 
-	event, err := events.NewBuildingCreatedEvent(b.AggregateBase, cmd.Address, cmd.Area)
+	event, err := events.NewBuildingCreatedEvent(b.AggregateBase, cmd.Address, cmd.Area, cmd.Bt)
 	if err != nil {
 		return err
 	}

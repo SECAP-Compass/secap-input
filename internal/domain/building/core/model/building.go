@@ -6,5 +6,5 @@ type Building struct {
 	Address      *vo.Address    `json:"address"`
 	Area         *vo.Area       `json:"area"`
 	Measurements []*Measurement `json:"measurements"`
-	Type         BuildingType   `json:"type"`
+	Type         string         `json:"type"`
 }

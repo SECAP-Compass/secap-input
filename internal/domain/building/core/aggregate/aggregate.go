@@ -56,6 +56,7 @@ func (b *BuildingAggregate) OnBuildingCreatedEvent(e *eventsourcing.Event) error
 
 	b.B.Address = event.Address
 	b.B.Area = event.Area
+	b.B.Type = event.BuildingType
 
 	return nil
 }

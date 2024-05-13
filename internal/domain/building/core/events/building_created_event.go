@@ -2,6 +2,7 @@ package events
 
 import (
 	"secap-input/internal/common/eventsourcing"
+	"secap-input/internal/domain/building/core/model"
 	"secap-input/internal/domain/building/core/vo"
 )
 
@@ -10,14 +11,16 @@ const (
 )
 
 type BuildingCreatedEvent struct {
-	Address *vo.Address `json:"address"`
-	Area    *vo.Area    `json:"area"`
+	Address      *vo.Address `json:"address"`
+	Area         *vo.Area    `json:"area"`
+	BuildingType string      `json:"type"`
 }
 
-func NewBuildingCreatedEvent(a *eventsourcing.AggregateBase, address *vo.Address, area *vo.Area) (*eventsourcing.Event, error) {
+func NewBuildingCreatedEvent(a *eventsourcing.AggregateBase, address *vo.Address, area *vo.Area, bt *model.BuildingType) (*eventsourcing.Event, error) {
 	eventData := &BuildingCreatedEvent{
-		Address: address,
-		Area:    area,
+		Address:      address,
+		Area:         area,
+		BuildingType: bt.String(),
 	}
 
 	event := eventsourcing.NewEvent(a, BuildingCreatedEventType)

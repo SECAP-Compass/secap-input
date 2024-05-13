@@ -5,7 +5,8 @@ import (
 )
 
 type CreateBuildingRequest struct {
-	Name    string     `json:"name"`
-	Address vo.Address `json:"address"`
-	Area    vo.Area    `json:"area"`
+	Name         string     `json:"name"`
+	Address      vo.Address `json:"address"`
+	Area         vo.Area    `json:"area"`
+	BuildingType string     `json:"buildingType"`
 }

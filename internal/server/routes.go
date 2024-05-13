@@ -41,10 +41,18 @@ func (s *FiberServer) createBuilding(c *fiber.Ctx) error {
 		})
 	}
 
+	bt, err := model.BuildingTypeFromString(r.BuildingType)
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
 	cmd := aggregate.NewCreateBuildingCommand(
 		uuid.New(),
 		&r.Address,
 		&r.Area,
+		&bt,
 	)
 	aggregateId, err := s.CreateBuildingCommandHandler.Handle(c.UserContext(), cmd)
 	if err != nil {
