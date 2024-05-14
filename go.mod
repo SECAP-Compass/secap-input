@@ -16,6 +16,7 @@ require (
 require (
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/iancoleman/strcase v0.3.0 // indirect
 	github.com/klauspost/compress v1.17.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect

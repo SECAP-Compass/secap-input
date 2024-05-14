@@ -31,9 +31,11 @@ func NewMeasureBuildingCommandHandler(repo ports.IAggregateRepository, mtp ports
 
 func (h *measureBuildingCommandHandler) Handle(ctx context.Context, cmd *aggregate.MeasureBuildingCommand) error {
 
-	if err := h.validateMeasurement(cmd.Measurement); err != nil {
-		h.l.Error("Failed to validate measurement", zap.Error(err))
-		return err
+	for _, m := range cmd.Measurements {
+		if err := h.validateMeasurement(m); err != nil {
+			h.l.Error("Failed to validate measurement", zap.Error(err))
+			return err
+		}
 	}
 
 	a := aggregate.NewBuildingAggregateWithId(cmd.AggregateId)
@@ -56,7 +58,7 @@ func (h *measureBuildingCommandHandler) validateMeasurement(m *model.Measurement
 		return err
 	}
 
-	if slices.Contains(mtList, m.MeasurementType) {
+	if !slices.Contains(mtList, m.MeasurementType) {
 		return errors.Errorf("measurement type %s is not found", m.MeasurementType)
 	}
 
@@ -64,7 +66,7 @@ func (h *measureBuildingCommandHandler) validateMeasurement(m *model.Measurement
 		return errors.Errorf("measurement value %f is invalid", m.Value)
 	}
 
-	// TODO: Measurement Unit validation
+	// TODO: Measurements Unit validation
 
 	return nil
 }

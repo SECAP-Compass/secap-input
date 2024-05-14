@@ -48,18 +48,35 @@ func (b *BuildingAggregate) CreateBuildingCommandHandler(ctx context.Context, cm
 
 type MeasureBuildingCommand struct {
 	*eventsourcing.BaseCommand
-	Measurement *model.Measurement
+	Measurements []*model.Measurement
 }
 
 func (b *BuildingAggregate) MeasureBuildingCommandHandler(cmd *MeasureBuildingCommand) error {
-	if cmd.Measurement.Value <= 0.0 {
-		return ErrBuildingMeasurementInvalidMeasurement
-	}
 
-	event, err := events.NewBuildingMeasuredEvent(b.AggregateBase, cmd.Measurement)
-	if err != nil {
+	if err := validateMeasurement(cmd.Measurements); err != nil {
 		return err
 	}
 
-	return b.Apply(event)
+	for _, m := range cmd.Measurements {
+		event, err := events.NewBuildingMeasuredEvent(b.AggregateBase, m)
+		if err != nil {
+			return err
+		}
+
+		if err := b.Apply(event); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func validateMeasurement(measurements []*model.Measurement) error {
+	for _, m := range measurements {
+		if m.Value <= 0.0 {
+			return ErrBuildingMeasurementInvalidMeasurement
+		}
+	}
+
+	return nil
 }

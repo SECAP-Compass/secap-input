@@ -85,16 +85,21 @@ func (s *FiberServer) measureBuilding(c *fiber.Ctx) error {
 
 	}
 
-	measurement, err := model.NewMeasurement(r.Unit, r.Value, r.Type, r.TypeHeader)
-	if err != nil {
-		return c.Status(400).JSON(fiber.Map{
-			"error": err.Error(),
-		})
+	measurements := make([]*model.Measurement, 0, len(r.Measurements))
+	for _, measurement := range r.Measurements {
+		m, err := model.NewMeasurement(measurement.Unit, measurement.Value, measurement.Type, measurement.TypeHeader)
+		if err != nil {
+			return c.Status(400).JSON(fiber.Map{
+				"error": err.Error(),
+			})
+		}
+
+		measurements = append(measurements, m)
 	}
 
 	cmd := &aggregate.MeasureBuildingCommand{
-		BaseCommand: eventsourcing.NewBaseCommand(aggregateId),
-		Measurement: measurement,
+		BaseCommand:  eventsourcing.NewBaseCommand(aggregateId),
+		Measurements: measurements,
 	}
 
 	err = s.MeasureBuildingCommandHandler.Handle(c.UserContext(), cmd)
