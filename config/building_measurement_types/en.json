@@ -1,84 +1,20 @@
 {
-  "Coal and Coke": [
-    "Anthracite Coal",
-    "Bituminous Coal",
-    "Sub-bituminous Coal",
-    "Lignite Coal",
-    "Mixed (Commercial Sector)",
-    "Mixed (Electric Power Sector)",
-    "Mixed (Industrial Coking)",
-    "Mixed (Industrial Sector)",
-    "Coal Coke"
+  "Electricity": ["Electricity"],
+  "District heating and cooling": ["District Heating", "District Cooling"],
+  "Fossil fuels": ["Natural Gas",
+    "Liquid Gas",
+    "Heating Oil",
+    "Diesel",
+    "Gasoline",
+    "Lignite",
+    "Coal",
+    "Other Fossil Fuels"
   ],
-  "Other Fuels - Solid": [
-    "Municipal Solid Waste",
-    "Petroleum Coke (Solid)",
-    "Plastics",
-    "Tires"
-  ],
-  "Biomass Fuels - Solid": [
-    "Agricultural Byproducts",
-    "Peat",
-    "Solid Byproducts",
-    "Wood and Wood Residuals"
-  ],
-  "Natural Gas": [
-    "Natural Gas"
-  ],
-  "Other Fuels - Gaseous": [
-    "Blast Furnace Gas",
-    "Coke Oven Gas",
-    "Fuel Gas",
-    "Propane Gas"
-  ],
-  "Biomass Fuels - Gaseous": [
-    "Landfill Gas",
-    "Other Biomass Gases"
-  ],
-  "Petroleum Products": [
-    "Asphalt and Road Oil",
-    "Aviation Gasoline",
-    "Butane",
-    "Butylene",
-    "Crude Oil",
-    "Distillate Fuel Oil No. 1",
-    "Distillate Fuel Oil No. 2",
-    "Distillate Fuel Oil No. 4",
-    "Ethane",
-    "Ethylene",
-    "Heavy Gas Oils",
-    "Isobutane",
-    "Isobutylene",
-    "Kerosene",
-    "Kerosene-Type Jet Fuel",
-    "Liquefied Petroleum Gases (LPG)",
-    "Lubricants",
-    "Motor Gasoline",
-    "Naphtha (<401 deg F)",
-    "Natural Gasoline",
-    "Other Oil (>401 deg F)",
-    "Pentanes Plus",
-    "Petrochemical Feedstocks",
-    "Petroleum Coke",
-    "Propane",
-    "Propylene",
-    "Residual Fuel Oil No. 5",
-    "Residual Fuel Oil No. 6",
-    "Special Naphtha",
-    "Unfinished Oils",
-    "Used Oil"
-  ],
-  "Biomass Fuels - Liquid": [
-    "Biodiesel (100%)",
-    "Ethanol (100%)",
-    "Rendered Animal Fat",
-    "Vegetable Oil"
-  ],
-  "Biomass Fuels - Kraft Pulping Liquor, by Wood Furnish": [
-    "North American Softwood",
-    "North American Hardwood",
-    "Bagasse",
-    "Bamboo",
-    "Straw"
+  "Renewable energies": ["Biogas",
+    "Plant Oil",
+    "Biofuel",
+    "Other Biomass",
+    "Solar Thermal",
+    "Geothermal"
   ]
 }

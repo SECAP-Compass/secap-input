@@ -51,14 +51,14 @@ type MeasureBuildingCommand struct {
 	Measurements []*model.Measurement
 }
 
-func (b *BuildingAggregate) MeasureBuildingCommandHandler(cmd *MeasureBuildingCommand) error {
+func (b *BuildingAggregate) MeasureBuildingCommandHandler(ctx context.Context, cmd *MeasureBuildingCommand) error {
 
 	if err := validateMeasurement(cmd.Measurements); err != nil {
 		return err
 	}
 
 	for _, m := range cmd.Measurements {
-		event, err := events.NewBuildingMeasuredEvent(b.AggregateBase, m)
+		event, err := events.NewBuildingMeasuredEvent(ctx, b.AggregateBase, m)
 		if err != nil {
 			return err
 		}

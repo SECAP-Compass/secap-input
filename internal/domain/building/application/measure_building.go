@@ -44,7 +44,7 @@ func (h *measureBuildingCommandHandler) Handle(ctx context.Context, cmd *aggrega
 		return errors.Errorf("building with id %s does not exist", cmd.AggregateId.String())
 	}
 
-	if err := a.MeasureBuildingCommandHandler(cmd); err != nil {
+	if err := a.MeasureBuildingCommandHandler(ctx, cmd); err != nil {
 		h.l.Error("failed to measure building", zap.Error(err), zap.String("id", cmd.AggregateId.String()))
 		return err
 	}
