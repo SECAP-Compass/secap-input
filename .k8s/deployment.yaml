@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: secap-input
+  namespace: secap-compass
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: secap-input
+  template:
+    metadata:
+      labels:
+        app: secap-input
+    spec:
+      containers:
+        - name: secap-input
+          image: secap-input:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8001
+              name: http
+              protocol: TCP
+          env:
+            - name: EVENTSTORE_CONNECTION_STRING
+              value: esdb://eventstore-db.persistence:2113
+          resources:
+            limits:
+              cpu: "200m"
+              memory: "1000Mi"
+            requests:
+              cpu: "50m"
+              memory: "50Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: secap-input
+  namespace: secap-compass
+spec:
+  selector:
+    app: secap-input
+  ports:
+    - protocol: TCP
+      name: http
+      port: 8001
+      targetPort: 8001
+
+  type: ClusterIP
+---
+# Existing Deployment and Service definitions
+
+#---
+#apiVersion: autoscaling/v2
+#kind: HorizontalPodAutoscaler
+#metadata:
+#  name: secap-input
+#spec:
+#  scaleTargetRef:
+#    apiVersion: apps/v1
+#    kind: Deployment
+#    name: secap-input
+#  minReplicas: 1
+#  maxReplicas: 10
+#  metrics:
+#    - type: Resource
+#      resource:
+#        name: cpu
+#        target:
+#          type: Utilization
+#          averageUtilization: 80

@@ -87,7 +87,7 @@ func (s *FiberServer) measureBuilding(c *fiber.Ctx) error {
 
 	measurements := make([]*model.Measurement, 0, len(r.Measurements))
 	for _, measurement := range r.Measurements {
-		m, err := model.NewMeasurement(measurement.Unit, measurement.Value, measurement.Type, measurement.TypeHeader)
+		m, err := measurement.ToModel()
 		if err != nil {
 			return c.Status(400).JSON(fiber.Map{
 				"error": err.Error(),

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/gofiber/fiber/v2/middleware/pprof"
 	"os"
 	"secap-input/internal/server"
 	"strconv"
@@ -12,9 +13,15 @@ import (
 func main() {
 
 	server := server.New()
+	server.Use(pprof.New())
 
 	server.RegisterFiberRoutes()
-	port, _ := strconv.Atoi(os.Getenv("PORT"))
+	p := os.Getenv("PORT")
+	if p == "" {
+		p = "8001"
+	}
+
+	port, _ := strconv.Atoi(p)
 	err := server.Listen(fmt.Sprintf(":%d", port))
 	if err != nil {
 		panic(fmt.Sprintf("cannot start server: %s", err))

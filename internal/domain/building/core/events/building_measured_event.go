@@ -2,6 +2,7 @@ package events
 
 import (
 	"context"
+	"github.com/iancoleman/strcase"
 	"secap-input/internal/common/eventsourcing"
 	"secap-input/internal/domain/building/core/model"
 )
@@ -13,8 +14,8 @@ type BuildingMeasuredEvent struct {
 const BuildingMeasuredEventType = "building.measured"
 
 func NewBuildingMeasuredEvent(ctx context.Context, a *eventsourcing.AggregateBase, measurement *model.Measurement) (*eventsourcing.Event, error) {
-	//measurement.MeasurementTypeHeader = model.MeasurementTypeHeader(strcase.ToCamel(string(measurement.MeasurementTypeHeader)))
-	//measurement.MeasurementType = model.MeasurementType(strcase.ToCamel(string(measurement.MeasurementType)))
+	measurement.MeasurementTypeHeader = model.MeasurementTypeHeader(strcase.ToCamel(string(measurement.MeasurementTypeHeader)))
+	measurement.MeasurementType = model.MeasurementType(strcase.ToCamel(string(measurement.MeasurementType)))
 	eventData := &BuildingMeasuredEvent{
 		Measurement: measurement,
 	}

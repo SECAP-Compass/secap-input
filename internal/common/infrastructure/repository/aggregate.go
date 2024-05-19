@@ -99,7 +99,8 @@ func (r *AggregateRepository) Save(ctx context.Context, a eventsourcing.Aggregat
 func (r *AggregateRepository) Exists(ctx context.Context, aggregateId uuid.UUID) bool {
 	readStreamOptions := esdb.ReadStreamOptions{Direction: esdb.Backwards, From: esdb.Revision(1)}
 	// error nil means stream exists?
-	_, err := r.db.ReadStream(ctx, aggregateId.String(), readStreamOptions, 1)
+	stream, err := r.db.ReadStream(ctx, aggregateId.String(), readStreamOptions, 1)
+	defer stream.Close()
 
 	if err == nil {
 		return false

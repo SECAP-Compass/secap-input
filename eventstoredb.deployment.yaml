@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: eventstore-db
+spec:
+  serviceName: eventstore-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eventstore-db
+  template:
+    metadata:
+      labels:
+        app: eventstore-db
+    spec:
+      containers:
+        - name: eventstore-db
+          image: eventstore/eventstore:lts
+          env:
+            - name: EVENTSTORE_CLUSTER_SIZE
+              value: "1"
+            - name: EVENTSTORE_RUN_PROJECTIONS
+              value: "All"
+            - name: EVENTSTORE_START_STANDARD_PROJECTIONS
+              value: "true"
+            - name: EVENTSTORE_HTTP_PORT
+              value: "2113"
+            - name: EVENTSTORE_INSECURE
+              value: "true"
+            - name: EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP
+              value: "true"
+            - name: EVENTSTORE_ALLOW_UNKNOWN_OPTIONS
+              value: "true"
+          ports:
+            - containerPort: 2113
+              name: http
+              protocol: TCP
+            - containerPort: 1113
+              name: grpc
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /var/lib/eventstore
+              name: eventstore-volume-data
+            - mountPath: /var/log/eventstore
+              name: eventstore-volume-logs
+  volumeClaimTemplates:
+    - metadata:
+        name: eventstore-volume-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi
+    - metadata:
+        name: eventstore-volume-logs
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eventstore-db
+spec:
+  selector:
+    app: eventstore-db
+  ports:
+    - protocol: TCP
+      port: 2113
+      targetPort: 2113
+  type: ClusterIP
