@@ -3,6 +3,7 @@ package interceptor
 import (
 	"context"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 func AuthorityInterceptor(c *fiber.Ctx) error {
@@ -27,7 +28,14 @@ func AuthorityInterceptor(c *fiber.Ctx) error {
 		})
 	}
 
+	cIdStr := ""
+	correlationId := c.GetReqHeaders()["X-Correlation-Id"]
+	if len(correlationId) == 0 {
+		cIdStr = uuid.New().String()
+	}
+
 	c.SetUserContext(context.WithValue(c.UserContext(), "authority", id))
 	c.SetUserContext(context.WithValue(c.UserContext(), "agent", agent[0]))
+	c.SetUserContext(context.WithValue(c.UserContext(), "operationId", cIdStr))
 	return c.Next()
 }

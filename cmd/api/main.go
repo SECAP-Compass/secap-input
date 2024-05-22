@@ -16,6 +16,7 @@ func main() {
 	server.Use(pprof.New())
 
 	server.RegisterFiberRoutes()
+	server.RegisterBuildingRoutes()
 	p := os.Getenv("PORT")
 	if p == "" {
 		p = "8001"

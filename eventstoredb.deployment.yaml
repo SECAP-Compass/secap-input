@@ -41,7 +41,7 @@ spec:
     spec:
       containers:
         - name: eventstore-db
-          image: eventstore/eventstore:lts
+          image: eventstore/eventstore:24.2.0-alpha-arm64v8
           env:
             - name: EVENTSTORE_CLUSTER_SIZE
               value: "1"

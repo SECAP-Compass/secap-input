@@ -2,7 +2,6 @@ package model
 
 import (
 	"fmt"
-	"time"
 )
 
 type Measurement struct {
@@ -10,17 +9,18 @@ type Measurement struct {
 	Value                 float64               `json:"value"`
 	MeasurementTypeHeader MeasurementTypeHeader `json:"measurementTypeHeader"`
 	MeasurementType       MeasurementType       `json:"measurementType"`
-	Timestamp             time.Time             `json:"timestamp"`
+	MeasurementMonth      uint8                 `json:"measurementMonth"`
+	MeasurementYear       uint16                `json:"measurementYear"`
 }
 
-func NewMeasurement(unit string, value float64, mt string, mth string, t time.Time) (*Measurement, error) {
-
+func NewMeasurement(unit string, value float64, mt string, mth string, mm uint8, my uint16) (*Measurement, error) {
 	return &Measurement{
 		Unit:                  unit,
 		Value:                 value,
 		MeasurementType:       MeasurementType(mt),
 		MeasurementTypeHeader: MeasurementTypeHeader(mth),
-		Timestamp:             t,
+		MeasurementMonth:      mm,
+		MeasurementYear:       my,
 	}, nil
 }
 

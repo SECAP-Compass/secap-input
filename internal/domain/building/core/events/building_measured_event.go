@@ -20,8 +20,6 @@ func NewBuildingMeasuredEvent(ctx context.Context, a *eventsourcing.AggregateBas
 		Measurement: measurement,
 	}
 
-	//eventType := fmt.Sprintf("%s.%s", BuildingMeasuredEventType, strcase.ToCamel(string(measurement.MeasurementType)))
-
 	event := eventsourcing.NewEvent(a, BuildingMeasuredEventType)
 	if err := event.SetEventData(eventData); err != nil {
 		return nil, err

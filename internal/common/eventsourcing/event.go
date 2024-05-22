@@ -22,8 +22,9 @@ type Event struct {
 }
 
 type EventMetadata struct {
-	Authority  string `json:"authority"`
-	OccurredBy string `json:"occurredBy"`
+	Authority   string `json:"authority"`
+	OccurredBy  string `json:"occurredBy"`
+	OperationId string `json:"operationId"`
 }
 
 func NewEvent(a *AggregateBase, eventType string) *Event {
@@ -39,8 +40,9 @@ func NewEvent(a *AggregateBase, eventType string) *Event {
 
 func NewEventMetadataFromContext(ctx context.Context) *EventMetadata {
 	return &EventMetadata{
-		Authority:  ctx.Value("authority").(string),
-		OccurredBy: ctx.Value("agent").(string),
+		Authority:   ctx.Value("authority").(string),
+		OccurredBy:  ctx.Value("agent").(string),
+		OperationId: ctx.Value("operationId").(string),
 	}
 }
 
@@ -101,8 +103,8 @@ func (e *Event) GetMetaData(toParse interface{}) error {
 	return jsoniter.Unmarshal(e.Metadata, toParse)
 }
 
-func (e *Event) SetMetaData(data interface{}) error {
-	metaDataByteArr, err := jsoniter.Marshal(data)
+func (e *Event) SetMetaData(eventMetadata *EventMetadata) error {
+	metaDataByteArr, err := jsoniter.Marshal(eventMetadata)
 	if err != nil {
 		return err
 	}

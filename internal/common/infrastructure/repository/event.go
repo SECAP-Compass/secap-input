@@ -11,10 +11,10 @@ import (
 )
 
 type EventRepository struct {
-	db esdb.Client
+	db *esdb.Client
 }
 
-func NewEventRepository(db esdb.Client) *EventRepository {
+func NewEventRepository(db *esdb.Client) *EventRepository {
 	return &EventRepository{db: db}
 }
 
@@ -38,7 +38,7 @@ func (r *EventRepository) SaveEvents(ctx context.Context, streamId string, event
 	return nil
 }
 
-func (r *EventRepository) LoadEvents(ctx context.Context, streamId string) ([]eventsourcing.Event, error) {
+func (r *EventRepository) LoadEvents(ctx context.Context, streamId string) ([]*eventsourcing.Event, error) {
 	stream, err := r.db.ReadStream(ctx, streamId, esdb.ReadStreamOptions{}, readCount)
 	if err != nil {
 		slog.Error("error reading stream", err)
@@ -46,7 +46,7 @@ func (r *EventRepository) LoadEvents(ctx context.Context, streamId string) ([]ev
 	}
 	defer stream.Close()
 
-	events := make([]eventsourcing.Event, 0, 100)
+	events := make([]*eventsourcing.Event, 0, 100)
 	for {
 		re, err := stream.Recv()
 		if errors.Is(err, io.EOF) {
@@ -57,8 +57,28 @@ func (r *EventRepository) LoadEvents(ctx context.Context, streamId string) ([]ev
 			return nil, err
 		}
 
-		events = append(events, *eventsourcing.NewEventFromRecordedEvent(re.Event))
+		events = append(events, eventsourcing.NewEventFromRecordedEvent(re.Event))
 	}
 
 	return events, nil
+}
+
+func (r *EventRepository) GetLatestEvent(ctx context.Context, streamId string) (*eventsourcing.Event, error) {
+	stream, err := r.db.ReadStream(ctx, streamId, esdb.ReadStreamOptions{
+		From:      esdb.End{},
+		Direction: esdb.Backwards,
+	}, 1)
+	if err != nil {
+		slog.Error("error reading stream", err)
+		return nil, err
+	}
+	defer stream.Close()
+
+	re, err := stream.Recv()
+	if err != nil && !errors.Is(err, io.EOF) {
+		slog.Error("error reading stream", err)
+		return nil, err
+	}
+
+	return eventsourcing.NewEventFromRecordedEvent(re.Event), nil
 }

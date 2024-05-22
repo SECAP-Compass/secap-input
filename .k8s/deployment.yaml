@@ -48,7 +48,6 @@ spec:
 
   type: ClusterIP
 ---
-# Existing Deployment and Service definitions
 
 #---
 #apiVersion: autoscaling/v2

@@ -14,13 +14,15 @@ import (
 func (s *FiberServer) RegisterFiberRoutes() {
 	s.App.Get("/", s.HelloWorldHandler)
 
+}
+
+func (s *FiberServer) RegisterBuildingRoutes() {
 	s.App.Get("/building/measurement-types", s.getAllMeasurementTypes)
 	s.App.Get("/building/measurement-types/:header", s.getMeasurementType)
 
 	s.App.Post("/building", interceptor.AuthorityInterceptor, s.createBuilding)
 	s.App.Post("/building/:buildingId/measure", interceptor.AuthorityInterceptor, s.measureBuilding)
 	s.App.Post("/building/:buildingId/bulk-measure", interceptor.AuthorityInterceptor, s.measureBuilding)
-
 }
 
 func (s *FiberServer) HelloWorldHandler(c *fiber.Ctx) error {
@@ -73,10 +75,10 @@ func (s *FiberServer) measureBuilding(c *fiber.Ctx) error {
 	err := c.BodyParser(&r)
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{
+
 			"error": err.Error(),
 		})
 	}
-
 	aggregateId, err := uuid.Parse(c.Params("buildingId"))
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{
@@ -136,11 +138,4 @@ func (s *FiberServer) getMeasurementType(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(mt)
-}
-
-func (s *FiberServer) bulkMeasure(c *fiber.Ctx) error {
-
-	// TODO: Implement
-	panic("Implement me.")
-	return nil
 }
