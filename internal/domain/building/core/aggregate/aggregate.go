@@ -42,7 +42,7 @@ func (b *BuildingAggregate) EventHandler(e *eventsourcing.Event) error {
 	case events.BuildingMeasuredEventType:
 		return b.OnBuildingMeasuredEvent(e)
 	default:
-		slog.Info("Received unknown/ignored event type:", e.EventType)
+		slog.Info("Received unknown/ignored event type:", slog.String("event type: ", e.EventType))
 	}
 
 	return nil
