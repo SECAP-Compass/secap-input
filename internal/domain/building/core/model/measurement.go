@@ -9,8 +9,12 @@ type Measurement struct {
 	Value                 float64               `json:"value"`
 	MeasurementTypeHeader MeasurementTypeHeader `json:"measurementTypeHeader"`
 	MeasurementType       MeasurementType       `json:"measurementType"`
-	MeasurementMonth      uint8                 `json:"measurementMonth"`
-	MeasurementYear       uint16                `json:"measurementYear"`
+	MeasurementDate       MeasurementDate       `json:"measurementDate"`
+}
+
+type MeasurementDate struct {
+	Month uint8  `json:"month"`
+	Year  uint16 `json:"year"`
 }
 
 func NewMeasurement(unit string, value float64, mt string, mth string, mm uint8, my uint16) (*Measurement, error) {
@@ -19,8 +23,10 @@ func NewMeasurement(unit string, value float64, mt string, mth string, mm uint8,
 		Value:                 value,
 		MeasurementType:       MeasurementType(mt),
 		MeasurementTypeHeader: MeasurementTypeHeader(mth),
-		MeasurementMonth:      mm,
-		MeasurementYear:       my,
+		MeasurementDate: MeasurementDate{
+			Month: 5, //tbd
+			Year:  2024,
+		},
 	}, nil
 }
 

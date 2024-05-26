@@ -20,13 +20,13 @@ func ConnectESDB() *esdb.Client {
 
 	connectionString := os.Getenv("EVENTSTORE_CONNECTION_STRING")
 	slog.Info("", slog.String("Eventstoredb connection string", connectionString))
-
-	cfg, err := esdb.ParseConnectionString(connectionString + "?tls=false")
+	cfg, err := esdb.ParseConnectionString(connectionString)
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	cfg.Username = "inputapi"
 	client, err := esdb.NewClient(cfg)
+
 	if err != nil {
 		log.Fatal(err)
 	}

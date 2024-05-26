@@ -5,8 +5,12 @@ type Measurement struct {
 	Value                 float64               `json:"value"`
 	MeasurementTypeHeader MeasurementTypeHeader `json:"measurementTypeHeader"`
 	MeasurementType       MeasurementType       `json:"measurementType"`
-	MeasurementMonth      uint8                 `json:"measurementMonth"`
-	MeasurementYear       uint16                `json:"measurementYear"`
+	MeasurementDate       MeasurementDate       `json:"measurementDate"`
+}
+
+type MeasurementDate struct {
+	Month uint8  `json:"month"`
+	Year  uint16 `json:"year"`
 }
 
 type MeasurementType string

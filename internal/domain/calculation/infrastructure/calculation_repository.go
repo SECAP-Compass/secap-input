@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-const measurementCalculated = "measurement.calculated"
+const measurementCalculated = "building.measurement.calculated"
 
 type calculationRepository struct {
 	*repository.EventRepository
@@ -20,7 +20,7 @@ func NewCalculationRepository(r *repository.EventRepository) port.CalculationRep
 	return &calculationRepository{r}
 }
 
-func (c *calculationRepository) Save(aggregateId string, calculated event.MeasurementCalculated) {
+func (c *calculationRepository) Save(aggregateId string, calculated event.MeasurementCalculated, et string) {
 	existingEvent, err := c.GetLatestEvent(context.Background(), aggregateId)
 	if err != nil {
 		panic(err)

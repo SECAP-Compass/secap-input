@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"math"
 	"secap-input/internal/common/eventsourcing"
+	"time"
 
 	"github.com/EventStore/EventStore-Client-Go/v4/esdb"
 )
@@ -81,10 +82,11 @@ func (r *AggregateRepository) Save(ctx context.Context, a eventsourcing.Aggregat
 		er = esdb.Revision(ev)
 	}
 
+	deadline := 250 * time.Second
 	_, err := r.db.AppendToStream(
 		ctx,
 		a.GetAggregateId().String(),
-		esdb.AppendToStreamOptions{ExpectedRevision: er},
+		esdb.AppendToStreamOptions{ExpectedRevision: er, Deadline: &deadline},
 		eventDataList...,
 	)
 	if err != nil {
@@ -100,7 +102,7 @@ func (r *AggregateRepository) Exists(ctx context.Context, aggregateId uuid.UUID)
 	readStreamOptions := esdb.ReadStreamOptions{Direction: esdb.Backwards, From: esdb.Revision(1)}
 	// error nil means stream exists?
 	stream, err := r.db.ReadStream(ctx, aggregateId.String(), readStreamOptions, 1)
-	defer stream.Close()
+	stream.Close()
 
 	if err == nil {
 		return false

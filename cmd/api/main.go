@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/gofiber/fiber/v2/middleware/pprof"
 	"os"
 	"secap-input/internal/server"
 	"strconv"
+
+	"github.com/gofiber/fiber/v2/middleware/pprof"
 
 	_ "github.com/joho/godotenv/autoload"
 )
@@ -27,4 +28,5 @@ func main() {
 	if err != nil {
 		panic(fmt.Sprintf("cannot start server: %s", err))
 	}
+
 }

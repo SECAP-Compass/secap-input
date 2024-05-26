@@ -2,14 +2,14 @@ package consumer
 
 import (
 	"context"
-	"github.com/EventStore/EventStore-Client-Go/v4/esdb"
-	jsoniter "github.com/json-iterator/go"
 	"secap-input/internal/domain/calculation/domain/event"
 	"secap-input/internal/domain/calculation/domain/port"
 	"strings"
+
+	"github.com/EventStore/EventStore-Client-Go/v4/esdb"
+	jsoniter "github.com/json-iterator/go"
 )
 
-const buildingMeasured = "$et-building.measured"
 const buildingMeasuredConsumerGroup = "buildingMeasuredConsumerGroup"
 
 type buildingMeasuredConsumer struct {
@@ -19,6 +19,7 @@ type buildingMeasuredConsumer struct {
 
 func NewBuildingMeasuredConsumer(ec *esdb.Client, handler port.BuildingMeasuredHandler) port.BuildingMeasuredConsumer {
 	consumer := &buildingMeasuredConsumer{ec: ec, handler: handler}
+
 	consumer.createSubscription()
 	go consumer.Consume()
 
@@ -65,4 +66,6 @@ func (b *buildingMeasuredConsumer) Consume() {
 			break
 		}
 	}
+
+	sub.Close()
 }

@@ -7,6 +7,10 @@ type BuildingMeasured struct {
 }
 
 type MeasurementCalculated struct {
+	Measurement Measurement `json:"measurement"`
+}
+
+type Measurement struct {
 	model.Measurement
 	MeasurementCalculation model.Calculation `json:"measurementCalculation"`
 }

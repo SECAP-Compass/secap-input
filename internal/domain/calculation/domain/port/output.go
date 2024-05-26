@@ -5,5 +5,5 @@ import (
 )
 
 type CalculationRepository interface {
-	Save(aggregateId string, calculated event.MeasurementCalculated)
+	Save(aggregateId string, calculated event.MeasurementCalculated, et string)
 }

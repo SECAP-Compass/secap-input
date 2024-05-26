@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/google/uuid"
 	"net/url"
 	"secap-input/internal/common/eventsourcing"
@@ -14,6 +15,7 @@ import (
 func (s *FiberServer) RegisterFiberRoutes() {
 	s.App.Get("/", s.HelloWorldHandler)
 
+	s.App.Get("/metrics", monitor.New())
 }
 
 func (s *FiberServer) RegisterBuildingRoutes() {
@@ -22,7 +24,6 @@ func (s *FiberServer) RegisterBuildingRoutes() {
 
 	s.App.Post("/building", interceptor.AuthorityInterceptor, s.createBuilding)
 	s.App.Post("/building/:buildingId/measure", interceptor.AuthorityInterceptor, s.measureBuilding)
-	s.App.Post("/building/:buildingId/bulk-measure", interceptor.AuthorityInterceptor, s.measureBuilding)
 }
 
 func (s *FiberServer) HelloWorldHandler(c *fiber.Ctx) error {

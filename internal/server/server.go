@@ -1,8 +1,7 @@
 package server
 
 import (
-	"github.com/gofiber/fiber/v2"
-	jsoniter "github.com/json-iterator/go"
+	eventstore "github.com/EventStore/EventStore-Client-Go/v4/esdb"
 	"secap-input/internal/common/esdb"
 	"secap-input/internal/common/infrastructure/repository"
 	"secap-input/internal/domain/building/application"
@@ -12,10 +11,14 @@ import (
 	"secap-input/internal/domain/calculation/domain/port"
 	"secap-input/internal/domain/calculation/domain/use_case"
 	infrastructure2 "secap-input/internal/domain/calculation/infrastructure"
+
+	"github.com/gofiber/fiber/v2"
+	jsoniter "github.com/json-iterator/go"
 )
 
 type FiberServer struct {
 	*fiber.App
+	esdbClient *eventstore.Client
 
 	ports.MeasurementTypeProvider
 	port.CalculationRepository
@@ -46,11 +49,14 @@ func New() *FiberServer {
 
 	server := &FiberServer{
 		App: fiber.New(fiber.Config{
-			ServerHeader: "secap-input",
-			AppName:      "secap-input",
-			JSONEncoder:  jsoniter.Marshal,
-			JSONDecoder:  jsoniter.Unmarshal,
+			DisableKeepalive: true,
+			ServerHeader:     "secap-input",
+			AppName:          "secap-input",
+			JSONEncoder:      jsoniter.Marshal,
+			JSONDecoder:      jsoniter.Unmarshal,
 		}),
+
+		esdbClient: esdbClient,
 
 		MeasurementTypeProvider: mtp,
 

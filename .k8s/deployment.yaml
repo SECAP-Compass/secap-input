@@ -23,14 +23,14 @@ spec:
               protocol: TCP
           env:
             - name: EVENTSTORE_CONNECTION_STRING
-              value: esdb://eventstore-db.persistence:2113
+              value: esdb://eventstore-db.persistence:2113?tls=false&keepAliveTimeout=1000&keepAliveInterval=100000
           resources:
             limits:
-              cpu: "200m"
-              memory: "1000Mi"
+              cpu: "300m"
+              memory: "200Mi"
             requests:
-              cpu: "50m"
-              memory: "50Mi"
+              cpu: "100m"
+              memory: "35Mi"
 ---
 apiVersion: v1
 kind: Service
@@ -60,11 +60,11 @@ spec:
 #    kind: Deployment
 #    name: secap-input
 #  minReplicas: 1
-#  maxReplicas: 10
+#  maxReplicas: 100
 #  metrics:
 #    - type: Resource
 #      resource:
 #        name: cpu
 #        target:
 #          type: Utilization
-#          averageUtilization: 80
+#          averageUtilization: 65
