@@ -7,13 +7,13 @@ type Command interface {
 }
 
 type BaseCommand struct {
-	AggregateId uuid.UUID
+	AggregateId string
 }
 
-func NewBaseCommand(aggregateId uuid.UUID) *BaseCommand {
+func NewBaseCommand(aggregateId string) *BaseCommand {
 	return &BaseCommand{AggregateId: aggregateId}
 }
 
-func (c *BaseCommand) GetAggregateId() uuid.UUID {
+func (c *BaseCommand) GetAggregateId() string {
 	return c.AggregateId
 }

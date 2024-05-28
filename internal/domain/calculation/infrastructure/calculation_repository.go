@@ -29,7 +29,7 @@ func (c *calculationRepository) Save(aggregateId string, calculated event.Measur
 	}
 
 	e := eventsourcing.Event{
-		EventID:       uuid.New(),
+		EventID:       uuid.NewString(),
 		EventType:     measurementCalculated,
 		Data:          nil,
 		Timestamp:     time.Time{},

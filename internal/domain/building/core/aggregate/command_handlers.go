@@ -3,7 +3,6 @@ package aggregate
 import (
 	"context"
 	"errors"
-	"github.com/google/uuid"
 	"secap-input/internal/common/eventsourcing"
 	"secap-input/internal/domain/building/core/events"
 	"secap-input/internal/domain/building/core/model"
@@ -24,7 +23,7 @@ type CreateBuildingCommand struct {
 	Bt      *model.BuildingType
 }
 
-func NewCreateBuildingCommand(aggregateId uuid.UUID, address *vo.Address, area *vo.Area, bt *model.BuildingType) *CreateBuildingCommand {
+func NewCreateBuildingCommand(aggregateId string, address *vo.Address, area *vo.Area, bt *model.BuildingType) *CreateBuildingCommand {
 	return &CreateBuildingCommand{BaseCommand: eventsourcing.NewBaseCommand(aggregateId), Address: address, Area: area, Bt: bt}
 }
 

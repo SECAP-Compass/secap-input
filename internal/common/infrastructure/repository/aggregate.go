@@ -29,7 +29,7 @@ func NewAggregateRepository(db *esdb.Client) *AggregateRepository {
 }
 
 func (r *AggregateRepository) Load(ctx context.Context, a eventsourcing.AggregateRoot) error {
-	stream, err := r.db.ReadStream(ctx, a.GetAggregateId().String(), esdb.ReadStreamOptions{}, readCount)
+	stream, err := r.db.ReadStream(ctx, a.GetAggregateId(), esdb.ReadStreamOptions{}, readCount)
 	if err != nil {
 		slog.Error("error reading stream", err)
 		return err
@@ -112,7 +112,7 @@ func (r *AggregateRepository) save(ctx context.Context, a eventsourcing.Aggregat
 	t := time.Now()
 	_, err := r.db.AppendToStream(
 		ctx,
-		a.GetAggregateId().String(),
+		a.GetAggregateId(),
 		esdb.AppendToStreamOptions{ExpectedRevision: er, Deadline: &deadline},
 		eventDataList...,
 	)

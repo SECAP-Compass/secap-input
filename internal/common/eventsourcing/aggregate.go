@@ -2,8 +2,6 @@ package eventsourcing
 
 import (
 	"slices"
-
-	"github.com/google/uuid"
 )
 
 const (
@@ -16,7 +14,7 @@ type AggregateRoot interface {
 	Load(events []*Event) error
 	RaiseEvent(e *Event) error
 
-	GetAggregateId() uuid.UUID
+	GetAggregateId() string
 	GetType() string
 	GetVersion() int64
 	GetUncommittedEvents() []*Event
@@ -29,7 +27,7 @@ type AggregateRoot interface {
 type EventHandler func(e *Event) error
 
 type AggregateBase struct {
-	ID                uuid.UUID
+	ID                string
 	Version           int64
 	AppliedEvents     []*Event
 	UncommittedEvents []*Event
@@ -55,7 +53,7 @@ func NewAggregateBase(cfg *AggregateConfig) *AggregateBase {
 	}
 }
 
-func (a *AggregateBase) GetAggregateId() uuid.UUID {
+func (a *AggregateBase) GetAggregateId() string {
 	return a.ID
 }
 

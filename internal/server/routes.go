@@ -1,15 +1,16 @@
 package server
 
 import (
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/monitor"
-	"github.com/google/uuid"
 	"net/url"
 	"secap-input/internal/common/eventsourcing"
 	"secap-input/internal/domain/building/core/aggregate"
 	"secap-input/internal/domain/building/core/model"
 	"secap-input/internal/server/interceptor"
 	"secap-input/internal/server/request"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/monitor"
+	"github.com/google/uuid"
 )
 
 func (s *FiberServer) RegisterFiberRoutes() {
@@ -52,7 +53,7 @@ func (s *FiberServer) createBuilding(c *fiber.Ctx) error {
 	}
 
 	cmd := aggregate.NewCreateBuildingCommand(
-		uuid.New(),
+		uuid.NewString(),
 		&r.Address,
 		&r.Area,
 		&bt,
@@ -66,7 +67,7 @@ func (s *FiberServer) createBuilding(c *fiber.Ctx) error {
 
 	return c.Status(201).JSON(fiber.Map{
 		"message":     "Building created",
-		"aggregateId": aggregateId.String(),
+		"aggregateId": aggregateId,
 	})
 }
 
@@ -80,10 +81,10 @@ func (s *FiberServer) measureBuilding(c *fiber.Ctx) error {
 			"error": err.Error(),
 		})
 	}
-	aggregateId, err := uuid.Parse(c.Params("buildingId"))
-	if err != nil {
+	aggregateId := c.Params("buildingId")
+	if aggregateId == "" {
 		return c.Status(400).JSON(fiber.Map{
-			"error": err.Error(),
+			"error": "buildingId is required",
 		})
 
 	}

@@ -5,8 +5,6 @@ import (
 	"secap-input/internal/common/eventsourcing"
 	"secap-input/internal/domain/building/core/events"
 	"secap-input/internal/domain/building/core/model"
-
-	"github.com/google/uuid"
 )
 
 const (
@@ -18,7 +16,7 @@ type BuildingAggregate struct {
 	B *model.Building
 }
 
-func NewBuildingAggregateWithId(id uuid.UUID) *BuildingAggregate {
+func NewBuildingAggregateWithId(id string) *BuildingAggregate {
 	a := NewBuildingAggregate()
 	a.ID = id
 	return a

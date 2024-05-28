@@ -2,7 +2,6 @@ package eventsourcing
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -12,12 +11,12 @@ import (
 )
 
 type Event struct {
-	EventID       uuid.UUID
+	EventID       string
 	EventType     string
 	Data          []byte
 	Timestamp     time.Time
 	AggregateType string
-	AggregateID   uuid.UUID
+	AggregateID   string
 	Version       int64
 	Metadata      []byte
 }
@@ -30,7 +29,7 @@ type EventMetadata struct {
 
 func NewEvent(a *AggregateBase, eventType string) *Event {
 	return &Event{
-		EventID:       uuid.New(),
+		EventID:       uuid.NewString(),
 		EventType:     eventType,
 		AggregateID:   a.GetAggregateId(),
 		AggregateType: a.GetType(),
@@ -49,24 +48,22 @@ func NewEventMetadataFromContext(ctx context.Context) *EventMetadata {
 
 // This may cause performance issues?
 func NewEventFromRecordedEvent(re *esdb.RecordedEvent) *Event {
-	aggrId, _ := uuid.Parse(re.StreamID)
-
 	return &Event{
-		EventID:     re.EventID,
+		EventID:     re.EventID.String(),
 		EventType:   re.EventType,
 		Data:        re.Data,
 		Timestamp:   re.CreatedDate,
-		AggregateID: aggrId,
+		AggregateID: re.StreamID,
 		Version:     int64(re.EventNumber),
 		Metadata:    re.UserMetadata,
 	}
 }
 
-func (e *Event) GetEventId() uuid.UUID {
+func (e *Event) GetEventId() string {
 	return e.EventID
 }
 
-func (e *Event) GetAggregateId() uuid.UUID {
+func (e *Event) GetAggregateId() string {
 	return e.AggregateID
 }
 
@@ -85,8 +82,6 @@ func (e *Event) SetVersion(version int64) {
 // May use generics here?
 func (e *Event) GetEventData(toParse interface{}) error {
 	err := jsoniter.Unmarshal(e.Data, toParse)
-	fmt.Errorf("%v", err)
-
 	return err
 }
 
@@ -116,7 +111,7 @@ func (e *Event) SetMetaData(eventMetadata *EventMetadata) error {
 
 func (e *Event) ToEventData() esdb.EventData {
 	return esdb.EventData{
-		EventID:     e.EventID,
+		EventID:     uuid.MustParse(e.EventID),
 		EventType:   e.EventType,
 		ContentType: esdb.ContentTypeJson,
 		Data:        e.Data,
