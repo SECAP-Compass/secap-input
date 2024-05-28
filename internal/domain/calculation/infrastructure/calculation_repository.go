@@ -2,12 +2,14 @@ package infrastructure
 
 import (
 	"context"
-	"github.com/google/uuid"
+	"log/slog"
 	"secap-input/internal/common/eventsourcing"
 	"secap-input/internal/common/infrastructure/repository"
 	"secap-input/internal/domain/calculation/domain/event"
 	"secap-input/internal/domain/calculation/domain/port"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 const measurementCalculated = "building.measurement.calculated"
@@ -40,10 +42,7 @@ func (c *calculationRepository) Save(aggregateId string, calculated event.Measur
 		panic(err)
 	}
 
-	if err := c.SaveEvents(context.Background(), aggregateId, []eventsourcing.Event{e}); err != nil {
-		panic(err)
-	}
-	if err != nil {
-		return
+	if err := c.EventRepository.Save(context.Background(), aggregateId, e); err != nil {
+		slog.Error("error saving event", err)
 	}
 }

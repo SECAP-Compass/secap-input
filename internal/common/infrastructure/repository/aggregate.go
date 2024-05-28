@@ -3,12 +3,13 @@ package repository
 import (
 	"context"
 	"errors"
-	"github.com/google/uuid"
 	"io"
 	"log/slog"
 	"math"
 	"secap-input/internal/common/eventsourcing"
 	"time"
+
+	"github.com/google/uuid"
 
 	"github.com/EventStore/EventStore-Client-Go/v4/esdb"
 )
@@ -64,16 +65,12 @@ func (r *AggregateRepository) Load(ctx context.Context, a eventsourcing.Aggregat
 	return nil
 }
 
+func (r *AggregateRepository) Create(ctx context.Context, a eventsourcing.AggregateRoot) error {
+	er := esdb.StreamExists{}
+	return r.save(ctx, a, er)
+}
+
 func (r *AggregateRepository) Save(ctx context.Context, a eventsourcing.AggregateRoot) error {
-	if len(a.GetUncommittedEvents()) == 0 {
-		return nil
-	}
-
-	eventDataList := make([]esdb.EventData, 0, len(a.GetUncommittedEvents()))
-	for _, e := range a.GetUncommittedEvents() {
-		eventDataList = append(eventDataList, e.ToEventData())
-	}
-
 	var er esdb.ExpectedRevision
 	if a.GetVersion() == 0 {
 		er = esdb.NoStream{}
@@ -82,7 +79,37 @@ func (r *AggregateRepository) Save(ctx context.Context, a eventsourcing.Aggregat
 		er = esdb.Revision(ev)
 	}
 
+	return r.save(ctx, a, er)
+}
+
+func (r *AggregateRepository) SaveWithoutVersionCheck(ctx context.Context, a eventsourcing.AggregateRoot) error {
+	er := esdb.Any{}
+	return r.save(ctx, a, er)
+}
+
+func (r *AggregateRepository) Exists(ctx context.Context, aggregateId uuid.UUID) bool {
+	readStreamOptions := esdb.ReadStreamOptions{
+		Direction: esdb.Backwards,
+		From:      esdb.Revision(1),
+	}
+	// error nil means stream exists?
+	stream, err := r.db.ReadStream(ctx, aggregateId.String(), readStreamOptions, 1)
+	stream.Close()
+
+	return err != nil
+}
+
+func (r *AggregateRepository) save(ctx context.Context, a eventsourcing.AggregateRoot, er esdb.ExpectedRevision) error {
+	if len(a.GetUncommittedEvents()) == 0 {
+		return nil
+	}
+
+	eventDataList := make([]esdb.EventData, 0, len(a.GetUncommittedEvents()))
+	for _, e := range a.GetUncommittedEvents() {
+		eventDataList = append(eventDataList, e.ToEventData())
+	}
 	deadline := 250 * time.Second
+	t := time.Now()
 	_, err := r.db.AppendToStream(
 		ctx,
 		a.GetAggregateId().String(),
@@ -94,18 +121,7 @@ func (r *AggregateRepository) Save(ctx context.Context, a eventsourcing.Aggregat
 		return err
 	}
 
+	slog.Info("eventSaved In", slog.String("time", time.Since(t).String()))
 	a.ClearUncommittedEvents()
 	return nil
-}
-
-func (r *AggregateRepository) Exists(ctx context.Context, aggregateId uuid.UUID) bool {
-	readStreamOptions := esdb.ReadStreamOptions{Direction: esdb.Backwards, From: esdb.Revision(1)}
-	// error nil means stream exists?
-	stream, err := r.db.ReadStream(ctx, aggregateId.String(), readStreamOptions, 1)
-	stream.Close()
-
-	if err == nil {
-		return false
-	}
-	return true
 }

@@ -2,7 +2,6 @@ package application
 
 import (
 	"context"
-	"github.com/pkg/errors"
 	"secap-input/internal/domain/building/core/aggregate"
 	"secap-input/internal/domain/building/core/ports"
 
@@ -28,12 +27,6 @@ func NewCreateBuildingCommandHandler(repo ports.IAggregateRepository) *createBui
 }
 
 func (h *createBuildingCommandHandler) Handle(ctx context.Context, cmd *aggregate.CreateBuildingCommand) (uuid.UUID, error) {
-	exist := h.repo.Exists(ctx, cmd.AggregateId)
-	if exist {
-		h.l.Error("building with id already exists", zap.String("id", cmd.AggregateId.String()))
-		return uuid.Nil, errors.Errorf("building with id %s already exists", cmd.AggregateId.String())
-	}
-
 	a := aggregate.NewBuildingAggregateWithId(cmd.AggregateId)
 	err := a.CreateBuildingCommandHandler(ctx, cmd)
 	if err != nil {
@@ -41,5 +34,5 @@ func (h *createBuildingCommandHandler) Handle(ctx context.Context, cmd *aggregat
 		return uuid.Nil, err
 	}
 
-	return cmd.AggregateId, h.repo.Save(ctx, a)
+	return cmd.AggregateId, h.repo.Create(ctx, a)
 }

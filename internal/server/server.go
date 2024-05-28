@@ -1,7 +1,6 @@
 package server
 
 import (
-	eventstore "github.com/EventStore/EventStore-Client-Go/v4/esdb"
 	"secap-input/internal/common/esdb"
 	"secap-input/internal/common/infrastructure/repository"
 	"secap-input/internal/domain/building/application"
@@ -11,6 +10,8 @@ import (
 	"secap-input/internal/domain/calculation/domain/port"
 	"secap-input/internal/domain/calculation/domain/use_case"
 	infrastructure2 "secap-input/internal/domain/calculation/infrastructure"
+
+	eventstore "github.com/EventStore/EventStore-Client-Go/v4/esdb"
 
 	"github.com/gofiber/fiber/v2"
 	jsoniter "github.com/json-iterator/go"

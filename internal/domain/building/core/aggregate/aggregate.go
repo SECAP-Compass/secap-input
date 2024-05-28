@@ -1,11 +1,12 @@
 package aggregate
 
 import (
-	"github.com/google/uuid"
 	"log/slog"
 	"secap-input/internal/common/eventsourcing"
 	"secap-input/internal/domain/building/core/events"
 	"secap-input/internal/domain/building/core/model"
+
+	"github.com/google/uuid"
 )
 
 const (
@@ -41,6 +42,7 @@ func (b *BuildingAggregate) EventHandler(e *eventsourcing.Event) error {
 		return b.OnBuildingCreatedEvent(e)
 	case events.BuildingMeasuredEventType:
 		return b.OnBuildingMeasuredEvent(e)
+	case "building.measurement.calculated":
 	default:
 		slog.Info("Received unknown/ignored event type:", slog.String("event type: ", e.EventType))
 	}

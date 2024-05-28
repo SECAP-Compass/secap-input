@@ -6,6 +6,7 @@ import (
 	"io"
 	"log/slog"
 	"secap-input/internal/common/eventsourcing"
+	"time"
 
 	"github.com/EventStore/EventStore-Client-Go/v4/esdb"
 )
@@ -24,15 +25,33 @@ func (r *EventRepository) SaveEvents(ctx context.Context, streamId string, event
 		eventDataList = append(eventDataList, e.ToEventData())
 	}
 
+	t := time.Now()
 	_, err := r.db.AppendToStream(
 		ctx,
 		streamId,
-		esdb.AppendToStreamOptions{},
+		esdb.AppendToStreamOptions{
+			ExpectedRevision: esdb.Any{},
+		},
 		eventDataList...,
 	)
 	if err != nil {
 		slog.Error("error appending to stream", err)
 		return err
+	}
+
+	slog.Info("event saved in", slog.String("time", time.Since(t).String()))
+
+	return nil
+}
+
+func (r *EventRepository) Save(ctx context.Context, streamId string, event eventsourcing.Event) error {
+	_, err := r.db.AppendToStream(
+		ctx, streamId, esdb.AppendToStreamOptions{
+			ExpectedRevision: esdb.Any{},
+		}, event.ToEventData())
+
+	if err != nil {
+		slog.Error("LAN", err)
 	}
 
 	return nil

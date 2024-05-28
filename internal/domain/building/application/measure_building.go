@@ -2,12 +2,13 @@ package application
 
 import (
 	"context"
-	"github.com/pkg/errors"
-	"go.uber.org/zap"
 	"secap-input/internal/domain/building/core/aggregate"
 	"secap-input/internal/domain/building/core/model"
 	"secap-input/internal/domain/building/core/ports"
 	"slices"
+
+	"github.com/pkg/errors"
+	"go.uber.org/zap"
 )
 
 type MeasureBuildingCommandHandler interface {
@@ -39,17 +40,12 @@ func (h *measureBuildingCommandHandler) Handle(ctx context.Context, cmd *aggrega
 	}
 
 	a := aggregate.NewBuildingAggregateWithId(cmd.AggregateId)
-	if err := h.repo.Load(context.Background(), a); err != nil {
-		h.l.Error("failed to load building aggregate", zap.Error(err), zap.String("id", cmd.AggregateId.String()))
-		return errors.Errorf("building with id %s does not exist", cmd.AggregateId.String())
-	}
-
 	if err := a.MeasureBuildingCommandHandler(ctx, cmd); err != nil {
 		h.l.Error("failed to measure building", zap.Error(err), zap.String("id", cmd.AggregateId.String()))
 		return err
 	}
 
-	return h.repo.Save(ctx, a)
+	return h.repo.SaveWithoutVersionCheck(ctx, a)
 }
 
 func (h *measureBuildingCommandHandler) validateMeasurement(m *model.Measurement) error {

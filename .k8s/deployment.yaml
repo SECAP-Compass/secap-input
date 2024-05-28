@@ -26,8 +26,8 @@ spec:
               value: esdb://eventstore-db.persistence:2113?tls=false&keepAliveTimeout=1000&keepAliveInterval=100000
           resources:
             limits:
-              cpu: "300m"
-              memory: "200Mi"
+              cpu: "200m"
+              memory: "70Mi"
             requests:
               cpu: "100m"
               memory: "35Mi"

@@ -3,8 +3,9 @@ package eventsourcing
 import (
 	"context"
 	"fmt"
-	"github.com/google/uuid"
 	"time"
+
+	"github.com/google/uuid"
 
 	"github.com/EventStore/EventStore-Client-Go/v4/esdb"
 	jsoniter "github.com/json-iterator/go"

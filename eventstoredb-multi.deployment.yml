@@ -30,7 +30,7 @@ metadata:
   name: eventstore-db
 spec:
   serviceName: eventstore-db
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: eventstore-db
@@ -41,14 +41,10 @@ spec:
     spec:
       containers:
         - name: eventstore-db
-          image: eventstore/eventstore:24.2.0-alpha-arm64v8
-          resources:
-            requests:
-              cpu: "5000m"
-              memory: "2Gi"
+          image: eventstore/eventstore:23.10.1-jammy
           env:
             - name: EVENTSTORE_CLUSTER_SIZE
-              value: "1"
+              value: "3"
             - name: EVENTSTORE_RUN_PROJECTIONS
               value: "All"
             - name: EVENTSTORE_START_STANDARD_PROJECTIONS
@@ -61,6 +57,10 @@ spec:
               value: "true"
             - name: EVENTSTORE_ALLOW_UNKNOWN_OPTIONS
               value: "true"
+            - name: EVENTSTORE_CLUSTER_DNS
+              value: "eventstore-db"
+            - name: EVENTSTORE_WORKER_THREADS
+              value: "10"
           ports:
             - containerPort: 2113
               name: http
