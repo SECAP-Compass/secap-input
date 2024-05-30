@@ -9,14 +9,11 @@ import (
 	"secap-input/internal/server/request"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/google/uuid"
 )
 
 func (s *FiberServer) RegisterFiberRoutes() {
 	s.App.Get("/", s.HelloWorldHandler)
-
-	s.App.Get("/metrics", monitor.New())
 }
 
 func (s *FiberServer) RegisterBuildingRoutes() {

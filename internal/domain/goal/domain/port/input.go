@@ -1,6 +1,8 @@
 package port
 
 import (
+	"context"
+	"secap-input/internal/domain/goal/domain/aggregate"
 	"secap-input/internal/domain/goal/domain/vo"
 	"time"
 )
@@ -10,8 +12,8 @@ type CreateGoalRequest struct {
 	Name       string `json:"name"`
 	Domain     string `json:"domain"`
 	Type       string `json:"type"`
-	CityId     uint8  `json:"city_id"`
-	DistrictId uint16 `json:"district_id"`
+	CityId     uint8  `json:"cityId"`
+	DistrictId uint16 `json:"districtId"`
 
 	Target vo.Emission `json:"target"`
 
@@ -20,7 +22,7 @@ type CreateGoalRequest struct {
 }
 
 type GoalCreator interface {
-	CreateGoal(req CreateGoalRequest) error // any is a placeholder for the request type
+	CreateGoal(ctx context.Context, req *CreateGoalRequest) (*aggregate.Goal, error) // any is a placeholder for the request type
 }
 
 /*

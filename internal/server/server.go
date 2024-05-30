@@ -3,13 +3,15 @@ package server
 import (
 	"secap-input/internal/common/esdb"
 	"secap-input/internal/common/infrastructure/repository"
-	"secap-input/internal/domain/building/application"
+	building_application "secap-input/internal/domain/building/application"
 	"secap-input/internal/domain/building/core/ports"
 	"secap-input/internal/domain/building/infrastructure"
 	"secap-input/internal/domain/calculation/consumer"
-	"secap-input/internal/domain/calculation/domain/port"
+	building_port "secap-input/internal/domain/calculation/domain/port"
 	"secap-input/internal/domain/calculation/domain/use_case"
 	infrastructure2 "secap-input/internal/domain/calculation/infrastructure"
+	goal_application "secap-input/internal/domain/goal/application"
+	goal_port "secap-input/internal/domain/goal/domain/port"
 
 	eventstore "github.com/EventStore/EventStore-Client-Go/v4/esdb"
 
@@ -22,12 +24,14 @@ type FiberServer struct {
 	esdbClient *eventstore.Client
 
 	ports.MeasurementTypeProvider
-	port.CalculationRepository
-	port.BuildingMeasuredConsumer
-	port.BuildingMeasuredHandler
+	building_port.CalculationRepository
+	building_port.BuildingMeasuredConsumer
+	building_port.BuildingMeasuredHandler
 
-	application.CreateBuildingCommandHandler
-	application.MeasureBuildingCommandHandler
+	building_application.CreateBuildingCommandHandler
+	building_application.MeasureBuildingCommandHandler
+
+	goal_port.GoalCreator
 }
 
 func New() *FiberServer {
@@ -40,13 +44,16 @@ func New() *FiberServer {
 
 	// Building
 	// CommandHandlers
-	createBuildingCommandHandler := application.NewCreateBuildingCommandHandler(aggregateRepository)
-	measureBuildingCommandHandler := application.NewMeasureBuildingCommandHandler(aggregateRepository, mtp)
+	createBuildingCommandHandler := building_application.NewCreateBuildingCommandHandler(aggregateRepository)
+	measureBuildingCommandHandler := building_application.NewMeasureBuildingCommandHandler(aggregateRepository, mtp)
 
 	// Calculation
 	calculationRepository := infrastructure2.NewCalculationRepository(eventRepository)
 	buildingMeasuredHandler := use_case.NewBuildingMeasuredHandler(calculationRepository)
 	buildingMeasuredConsumer := consumer.NewBuildingMeasuredConsumer(esdbClient, buildingMeasuredHandler)
+
+	// Goal
+	goalCreator := goal_application.NewGoalCreatorAdapter(aggregateRepository)
 
 	server := &FiberServer{
 		App: fiber.New(fiber.Config{
@@ -66,6 +73,8 @@ func New() *FiberServer {
 
 		BuildingMeasuredHandler:  buildingMeasuredHandler,
 		BuildingMeasuredConsumer: buildingMeasuredConsumer,
+
+		GoalCreator: goalCreator,
 	}
 
 	return server

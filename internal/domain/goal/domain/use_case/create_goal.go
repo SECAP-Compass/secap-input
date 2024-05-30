@@ -24,7 +24,7 @@ func NewGoalCreator() *GoalCreator {
 }
 
 // Should I pass event directly?
-func (gc *GoalCreator) CreateGoal(ctx context.Context, req port.CreateGoalRequest) (*aggregate.Goal, error) {
+func (gc *GoalCreator) CreateGoal(ctx context.Context, req *port.CreateGoalRequest) (*aggregate.Goal, error) {
 
 	// validations...
 	if req.Name == "" {
@@ -56,7 +56,7 @@ func (gc *GoalCreator) CreateGoal(ctx context.Context, req port.CreateGoalReques
 	}
 
 	// apply event to aggregate
-	err = a.EventHandler(e)
+	err = a.Apply(e)
 	if err != nil {
 		return nil, err
 	}
@@ -64,14 +64,17 @@ func (gc *GoalCreator) CreateGoal(ctx context.Context, req port.CreateGoalReques
 	return a, nil
 }
 
-func (gc *GoalCreator) generateStreamID(req port.CreateGoalRequest) string {
-	streamId := string(req.CityId)
+func (gc *GoalCreator) generateStreamID(req *port.CreateGoalRequest) string {
+	streamId := fmt.Sprint(req.CityId)
 
 	if req.DistrictId != 0 {
 		streamId += "_" + fmt.Sprint(req.DistrictId)
 	}
 
-	streamId += "_" + req.Domain + "_" + req.Type + "_" + req.Name + "_" + req.Start.String() + "_" + req.End.String()
+	sM := req.Start.Month().String()
+	eM := req.End.Month().String()
+
+	streamId += "_" + req.Domain + "_" + req.Type + "_" + req.Name + "_" + sM + "_" + eM
 
 	return streamId
 }

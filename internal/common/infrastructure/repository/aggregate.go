@@ -66,7 +66,7 @@ func (r *AggregateRepository) Load(ctx context.Context, a eventsourcing.Aggregat
 }
 
 func (r *AggregateRepository) Create(ctx context.Context, a eventsourcing.AggregateRoot) error {
-	er := esdb.StreamExists{}
+	er := esdb.NoStream{}
 	return r.save(ctx, a, er)
 }
 
