@@ -9,8 +9,12 @@ import (
 
 type Goal struct {
 	*eventsourcing.AggregateBase
-	target  *vo.Emission
-	current *vo.Emission // Current can be reached from read api too but for audit purpose we can keep it here
+	target     *vo.Emission
+	current    *vo.Emission // Current can be reached from read api too but for audit purpose we can keep it here
+	limit      float64
+	cityId     uint
+	districtId uint
+	percentage *vo.Emission
 
 	start time.Time
 	end   time.Time
@@ -38,35 +42,49 @@ func (g *Goal) EventHandler(e *eventsourcing.Event) error {
 	switch e.EventType {
 	case "goal.created":
 		return g.OnGoalCreatedEvent(e)
-	case "goal.progressed":
-		return g.OnGoalProgressedEvent(e)
+	case "building.measurement.calculated":
+		return g.OnGoalUpdatedEvent(e)
 	default:
 		return nil
 	}
 }
 
 func (g *Goal) OnGoalCreatedEvent(e *eventsourcing.Event) error {
-	event := &event.GoalCreatedEvent{}
+	ev := &event.GoalCreatedEvent{}
 
-	err := e.GetEventData(event)
+	err := e.GetEventData(ev)
 	if err != nil {
 		return err
 	}
 
-	g.target = &event.Target
-	g.start = event.Start
-	g.end = event.End
+	g.target = &ev.Target
+	g.start = ev.Start
+	g.end = ev.End
+	g.cityId = uint(ev.CityId)
+	g.districtId = uint(ev.DistrictId)
+	g.current = &vo.Emission{}
 
 	return nil
 }
 
-func (g *Goal) OnGoalProgressedEvent(e *eventsourcing.Event) error {
-	event := &event.GoalProgressedEvent{}
+func (g *Goal) OnGoalUpdatedEvent(e *eventsourcing.Event) error {
+	ev := &event.GoalUpdatedEvent{}
 
-	err := e.GetEventData(event)
+	err := e.GetEventData(ev)
 	if err != nil {
 		return err
 	}
 
+	g.current.Add(ev.Emission)
+	g.percentage.Add(ev.Delta)
+
 	return nil
+}
+
+func (g *Goal) GetCurrent() *vo.Emission {
+	return g.current
+}
+
+func (g *Goal) GetTarget() *vo.Emission {
+	return g.target
 }

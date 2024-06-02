@@ -101,3 +101,22 @@ func (r *EventRepository) GetLatestEvent(ctx context.Context, streamId string) (
 
 	return eventsourcing.NewEventFromRecordedEvent(re.Event), nil
 }
+
+func (r *EventRepository) GetFirstEvent(ctx context.Context, streamId string) (*eventsourcing.Event, error) {
+	stream, err := r.db.ReadStream(ctx, streamId, esdb.ReadStreamOptions{
+		From:      esdb.Start{},
+		Direction: esdb.Forwards,
+	}, 1)
+	if err != nil {
+		slog.Error("error reading stream", err)
+		return nil, err
+	}
+	defer stream.Close()
+
+	re, err := stream.Recv()
+	if err != nil && !errors.Is(err, io.EOF) {
+		slog.Error("error reading stream", err)
+	}
+
+	return eventsourcing.NewEventFromRecordedEvent(re.Event), nil
+}

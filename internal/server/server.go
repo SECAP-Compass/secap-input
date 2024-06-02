@@ -1,6 +1,7 @@
 package server
 
 import (
+	eventstore "github.com/EventStore/EventStore-Client-Go/v4/esdb"
 	"secap-input/internal/common/esdb"
 	"secap-input/internal/common/infrastructure/repository"
 	building_application "secap-input/internal/domain/building/application"
@@ -8,12 +9,11 @@ import (
 	"secap-input/internal/domain/building/infrastructure"
 	"secap-input/internal/domain/calculation/consumer"
 	building_port "secap-input/internal/domain/calculation/domain/port"
-	"secap-input/internal/domain/calculation/domain/use_case"
+	calculation_usecase "secap-input/internal/domain/calculation/domain/use_case"
 	infrastructure2 "secap-input/internal/domain/calculation/infrastructure"
 	goal_application "secap-input/internal/domain/goal/application"
 	goal_port "secap-input/internal/domain/goal/domain/port"
-
-	eventstore "github.com/EventStore/EventStore-Client-Go/v4/esdb"
+	goal_usecase "secap-input/internal/domain/goal/domain/use_case"
 
 	"github.com/gofiber/fiber/v2"
 	jsoniter "github.com/json-iterator/go"
@@ -49,11 +49,14 @@ func New() *FiberServer {
 
 	// Calculation
 	calculationRepository := infrastructure2.NewCalculationRepository(eventRepository)
-	buildingMeasuredHandler := use_case.NewBuildingMeasuredHandler(calculationRepository)
+	buildingMeasuredHandler := calculation_usecase.NewBuildingMeasuredHandler(calculationRepository)
 	buildingMeasuredConsumer := consumer.NewBuildingMeasuredConsumer(esdbClient, buildingMeasuredHandler)
 
 	// Goal
 	goalCreator := goal_application.NewGoalCreatorAdapter(aggregateRepository)
+	goalUpdater := goal_usecase.NewGoalUpdaterAdapter()
+
+	_ = goal_application.NewMeasurementCalculatedConsumer(esdbClient, goalUpdater, eventRepository, aggregateRepository)
 
 	server := &FiberServer{
 		App: fiber.New(fiber.Config{

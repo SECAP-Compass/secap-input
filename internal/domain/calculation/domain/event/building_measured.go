@@ -1,6 +1,8 @@
 package event
 
-import "secap-input/internal/domain/calculation/domain/model"
+import (
+	"secap-input/internal/domain/calculation/domain/model"
+)
 
 type BuildingMeasured struct {
 	Measurement model.Measurement `json:"measurement"`
