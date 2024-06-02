@@ -32,6 +32,7 @@ type FiberServer struct {
 	building_application.MeasureBuildingCommandHandler
 
 	goal_port.GoalCreator
+	goal_port.GoalProvider
 }
 
 func New() *FiberServer {
@@ -53,8 +54,10 @@ func New() *FiberServer {
 	buildingMeasuredConsumer := consumer.NewBuildingMeasuredConsumer(esdbClient, buildingMeasuredHandler)
 
 	// Goal
+	goalUpdater := goal_usecase.NewGoalUpdaterAdapter() // Command Handler
+
 	goalCreator := goal_application.NewGoalCreatorAdapter(aggregateRepository)
-	goalUpdater := goal_usecase.NewGoalUpdaterAdapter()
+	goalProvider := goal_application.NewGetGoalAdapter(aggregateRepository)
 
 	_ = goal_application.NewMeasurementCalculatedConsumer(esdbClient, goalUpdater, eventRepository, aggregateRepository)
 
@@ -77,7 +80,8 @@ func New() *FiberServer {
 		BuildingMeasuredHandler:  buildingMeasuredHandler,
 		BuildingMeasuredConsumer: buildingMeasuredConsumer,
 
-		GoalCreator: goalCreator,
+		GoalCreator:  goalCreator,
+		GoalProvider: goalProvider,
 	}
 
 	return server

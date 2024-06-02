@@ -9,15 +9,15 @@ import (
 
 type Goal struct {
 	*eventsourcing.AggregateBase
-	target     *vo.Emission
-	current    *vo.Emission // Current can be reached from read api too but for audit purpose we can keep it here
-	limit      float64
-	cityId     uint
-	districtId uint
-	percentage *vo.Emission
+	Target     *vo.Emission `json:"Target"`
+	Current    *vo.Emission `json:"current"` // Current can be reached from read api too but for audit purpose we can keep it here
+	Limit      float64      `json:"limit"`
+	CityId     uint         `json:"cityId"`
+	DistrictId uint         `json:"districtId"`
+	Percentage *vo.Emission `json:"percentage"`
 
-	start time.Time
-	end   time.Time
+	Start time.Time `json:"start"`
+	End   time.Time `json:"end"`
 }
 
 func NewGoalAggregate() *Goal {
@@ -42,7 +42,7 @@ func (g *Goal) EventHandler(e *eventsourcing.Event) error {
 	switch e.EventType {
 	case "goal.created":
 		return g.OnGoalCreatedEvent(e)
-	case "building.measurement.calculated":
+	case "goal.updated":
 		return g.OnGoalUpdatedEvent(e)
 	default:
 		return nil
@@ -57,12 +57,13 @@ func (g *Goal) OnGoalCreatedEvent(e *eventsourcing.Event) error {
 		return err
 	}
 
-	g.target = &ev.Target
-	g.start = ev.Start
-	g.end = ev.End
-	g.cityId = uint(ev.CityId)
-	g.districtId = uint(ev.DistrictId)
-	g.current = &vo.Emission{}
+	g.Target = &ev.Target
+	g.Start = ev.Start
+	g.End = ev.End
+	g.CityId = uint(ev.CityId)
+	g.DistrictId = uint(ev.DistrictId)
+	g.Current = &vo.Emission{}
+	g.Percentage = &vo.Emission{}
 
 	return nil
 }
@@ -75,16 +76,16 @@ func (g *Goal) OnGoalUpdatedEvent(e *eventsourcing.Event) error {
 		return err
 	}
 
-	g.current.Add(ev.Emission)
-	g.percentage.Add(ev.Delta)
+	g.Current.Add(ev.Emission)
+	g.Percentage.Add(ev.Delta)
 
 	return nil
 }
 
 func (g *Goal) GetCurrent() *vo.Emission {
-	return g.current
+	return g.Current
 }
 
 func (g *Goal) GetTarget() *vo.Emission {
-	return g.target
+	return g.Target
 }

@@ -9,8 +9,9 @@ import (
 
 func (s *FiberServer) RegisterGoalRoutes() {
 
-	goalRouteGroup := s.App.Group("/goals", interceptor.AuthorityInterceptor)
+	goalRouteGroup := s.App.Group("/goals")
 	goalRouteGroup.Post("", interceptor.AuthorityInterceptor, s.createGoal)
+	goalRouteGroup.Get("/:goalId", s.getGoal)
 }
 
 func (s *FiberServer) createGoal(c *fiber.Ctx) error {
@@ -30,5 +31,25 @@ func (s *FiberServer) createGoal(c *fiber.Ctx) error {
 
 	return c.Status(201).JSON(fiber.Map{
 		"goal": ga,
+	})
+}
+
+func (s *FiberServer) getGoal(c *fiber.Ctx) error {
+	goalId := c.Params("goalId")
+	if goalId == "" {
+		return c.Status(400).JSON(fiber.Map{
+			"error": "goalId is required",
+		})
+	}
+
+	goal, err := s.GoalProvider.GetGoalById(c.UserContext(), goalId)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	return c.Status(200).JSON(fiber.Map{
+		"goal": goal,
 	})
 }
